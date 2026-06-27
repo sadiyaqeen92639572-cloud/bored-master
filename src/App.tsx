@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Sparkles, Heart, Trophy, RefreshCw, Terminal, Search, Info, HelpCircle, AlertCircle, Share2, Compass, Zap, HelpCircle as HelpIcon, Smile, Award } from 'lucide-react';
+import { Sparkles, Heart, Trophy, RefreshCw, Terminal, Search, Info, HelpCircle, AlertCircle, Share2, Compass, Zap, HelpCircle as HelpIcon, Smile, Award, Shield } from 'lucide-react';
 import { activities, contextLabels, durationLabels, moodLabels } from './data/activities';
 import { getRecommendation } from './utils/recommend';
 import { ActivityCard } from './components/ActivityCard';
@@ -230,6 +230,18 @@ export default function App() {
       {/* Stealth Mode absolute fullscreen overlay */}
       {isStealthActive && (
         <StealthMode onClose={() => setIsStealthActive(false)} />
+      )}
+
+      {/* Sticky Stealth Button — always visible, bottom-right */}
+      {!isStealthActive && (
+        <button
+          onClick={() => setIsStealthActive(true)}
+          title="Activate Stealth Mode (fake spreadsheet) — Press Escape to exit"
+          className="fixed bottom-5 right-5 z-50 group flex items-center gap-2 bg-black/80 hover:bg-black text-white border-2 border-white/20 hover:border-[#00FF00] px-3 py-2.5 text-xs font-black uppercase tracking-widest transition-all duration-200 shadow-lg hover:shadow-[0_0_12px_rgba(0,255,0,0.3)] cursor-pointer"
+        >
+          <Shield className="w-3.5 h-3.5 text-white/60 group-hover:text-[#00FF00] transition-colors" />
+          <span className="hidden sm:inline text-white/60 group-hover:text-white transition-colors">Stealth</span>
+        </button>
       )}
 
       {/* Top Header / Retro Console Panel */}
