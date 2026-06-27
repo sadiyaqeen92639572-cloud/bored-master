@@ -181,20 +181,27 @@ export default function App() {
     }
   };
 
-  // Auto-pick when context button clicked — score against new context immediately
+  // Auto-pick when context button clicked — always re-scores, excludes current activity
   const handleContextChange = (newContext: string) => {
     setActiveContext(newContext);
     if (newContext === 'all') return;
 
-    const pool = activities.filter(a => a.contexts.includes(newContext as any));
-    const pick = getRecommendation(pool.length > 0 ? pool : activities, {
-      activeContext: newContext,
-      activeDuration,
-      activeMood,
-      favorites: userStats.favorites,
-      completedActivities: userStats.completedActivities,
-      mostPlayedIds: popularIds.mostPlayed,
-    });
+    const pool = activities
+      .filter(a => a.contexts.includes(newContext as any))
+      .filter(a => a.id !== selectedActivity?.id); // exclude current so re-click picks different
+
+    const fallback = activities.filter(a => a.contexts.includes(newContext as any));
+    const pick = getRecommendation(
+      pool.length > 0 ? pool : fallback,
+      {
+        activeContext: newContext,
+        activeDuration,
+        activeMood,
+        favorites: userStats.favorites,
+        completedActivities: userStats.completedActivities,
+        mostPlayedIds: popularIds.mostPlayed,
+      }
+    );
     if (pick) {
       setSelectedActivity(pick);
       if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
