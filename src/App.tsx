@@ -181,6 +181,29 @@ export default function App() {
     }
   };
 
+  // Auto-pick when context button clicked — score against new context immediately
+  const handleContextChange = (newContext: string) => {
+    setActiveContext(newContext);
+    if (newContext === 'all') return;
+
+    const pool = activities.filter(a => a.contexts.includes(newContext as any));
+    const pick = getRecommendation(pool.length > 0 ? pool : activities, {
+      activeContext: newContext,
+      activeDuration,
+      activeMood,
+      favorites: userStats.favorites,
+      completedActivities: userStats.completedActivities,
+      mostPlayedIds: popularIds.mostPlayed,
+    });
+    if (pick) {
+      setSelectedActivity(pick);
+      if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
+      setTimeout(() => {
+        document.getElementById('main-activity-view')?.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+  };
+
   // Initial selection of a random activity if none preloaded from query
   useEffect(() => {
     if (!selectedActivity && activities.length > 0) {
@@ -426,7 +449,7 @@ export default function App() {
                   </label>
                   <div className="flex flex-wrap gap-1.5">
                     <button
-                      onClick={() => setActiveContext('all')}
+                      onClick={() => handleContextChange('all')}
                       className={`px-2.5 py-1.5 border-2 border-black font-bold text-xs uppercase transition-all cursor-pointer ${
                         activeContext === 'all'
                            ? 'bg-[#00FF00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -438,7 +461,7 @@ export default function App() {
                     {Object.entries(contextLabels).map(([key, label]) => (
                       <button
                         key={key}
-                        onClick={() => setActiveContext(key)}
+                        onClick={() => handleContextChange(key)}
                         className={`px-2.5 py-1.5 border-2 border-black font-bold text-xs uppercase transition-all cursor-pointer ${
                           activeContext === key
                             ? 'bg-[#00FF00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
