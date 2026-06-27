@@ -1,0 +1,6 @@
+{
+  "name": "Bored Master",
+  "description": "An ultra-interactive and playful hub of instant ideas, mini-games, anti-boredom gadgets, and stealth modes tailored to your context, available time, and mood.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

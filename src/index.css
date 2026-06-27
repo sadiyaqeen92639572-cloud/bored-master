@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700;800&display=swap');
+
+@theme {
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Syne", sans-serif;
+}
+
+body {
+  background-color: #F4F4F1;
+  color: #1A1A1A;
+}
+
+/* Custom shadow animations or neon effects if needed */
+.shadow-neo-sm {
+  box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+}
+
+.shadow-neo-md {
+  box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+}
+
+.shadow-neo-lg {
+  box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+}
+
+.shadow-neo-xl {
+  box-shadow: 12px 12px 0px 0px rgba(0,0,0,1);
+}
