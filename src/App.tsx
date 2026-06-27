@@ -181,27 +181,51 @@ export default function App() {
     }
   };
 
-  // Auto-pick when context button clicked — always re-scores, excludes current activity
-  const handleContextChange = (newContext: string) => {
-    setActiveContext(newContext);
-    if (newContext === 'all') return;
+  // Unified filter-change handler — runs selection algo on every filter button click
+  const handleFilterChange = (
+    type: 'context' | 'duration' | 'mood',
+    value: string
+  ) => {
+    // Update the right state
+    if (type === 'context') setActiveContext(value);
+    else if (type === 'duration') setActiveDuration(value);
+    else setActiveMood(value);
 
-    const pool = activities
-      .filter(a => a.contexts.includes(newContext as any))
-      .filter(a => a.id !== selectedActivity?.id); // exclude current so re-click picks different
+    // "all" reset → no auto-pick
+    if (value === 'all') return;
 
-    const fallback = activities.filter(a => a.contexts.includes(newContext as any));
-    const pick = getRecommendation(
-      pool.length > 0 ? pool : fallback,
-      {
-        activeContext: newContext,
-        activeDuration,
-        activeMood,
-        favorites: userStats.favorites,
-        completedActivities: userStats.completedActivities,
-        mostPlayedIds: popularIds.mostPlayed,
-      }
-    );
+    // Resolve current filter state + apply the new value
+    const ctx      = type === 'context'  ? value : activeContext;
+    const dur      = type === 'duration' ? value : activeDuration;
+    const mood     = type === 'mood'     ? value : activeMood;
+    const currentId = selectedActivity?.id;
+
+    // Helper: filter pool by given constraints
+    const filtered = (c: string, d: string, m: string) =>
+      activities.filter(a =>
+        a.id !== currentId &&
+        (c === 'all' || a.contexts.includes(c as any)) &&
+        (d === 'all' || a.durations.includes(d as any)) &&
+        (m === 'all' || a.moods.includes(m as any))
+      );
+
+    // Fallback chain: all 3 → drop mood → drop duration → drop context → anything
+    const pool =
+      filtered(ctx, dur, mood).length > 0 ? filtered(ctx, dur, mood) :
+      filtered(ctx, dur, 'all').length > 0 ? filtered(ctx, dur, 'all') :
+      filtered(ctx, 'all', mood).length > 0 ? filtered(ctx, 'all', mood) :
+      filtered(ctx, 'all', 'all').length > 0 ? filtered(ctx, 'all', 'all') :
+      activities.filter(a => a.id !== currentId);
+
+    const pick = getRecommendation(pool, {
+      activeContext: ctx,
+      activeDuration: dur,
+      activeMood: mood,
+      favorites: userStats.favorites,
+      completedActivities: userStats.completedActivities,
+      mostPlayedIds: popularIds.mostPlayed,
+    });
+
     if (pick) {
       setSelectedActivity(pick);
       if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
@@ -456,7 +480,7 @@ export default function App() {
                   </label>
                   <div className="flex flex-wrap gap-1.5">
                     <button
-                      onClick={() => handleContextChange('all')}
+                      onClick={() => handleFilterChange('context', 'all')}
                       className={`px-2.5 py-1.5 border-2 border-black font-bold text-xs uppercase transition-all cursor-pointer ${
                         activeContext === 'all'
                            ? 'bg-[#00FF00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -468,7 +492,7 @@ export default function App() {
                     {Object.entries(contextLabels).map(([key, label]) => (
                       <button
                         key={key}
-                        onClick={() => handleContextChange(key)}
+                        onClick={() => handleFilterChange('context', key)}
                         className={`px-2.5 py-1.5 border-2 border-black font-bold text-xs uppercase transition-all cursor-pointer ${
                           activeContext === key
                             ? 'bg-[#00FF00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -488,7 +512,7 @@ export default function App() {
                   </label>
                   <div className="flex flex-wrap gap-1.5">
                     <button
-                      onClick={() => setActiveDuration('all')}
+                      onClick={() => handleFilterChange('duration', 'all')}
                       className={`px-2.5 py-1.5 border-2 border-black font-bold text-xs uppercase transition-all cursor-pointer ${
                         activeDuration === 'all'
                           ? 'bg-[#00FF00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -500,7 +524,7 @@ export default function App() {
                     {Object.entries(durationLabels).map(([key, label]) => (
                       <button
                         key={key}
-                        onClick={() => setActiveDuration(key)}
+                        onClick={() => handleFilterChange('duration', key)}
                         className={`px-2.5 py-1.5 border-2 border-black font-bold text-xs uppercase transition-all cursor-pointer ${
                           activeDuration === key
                             ? 'bg-[#00FF00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -520,7 +544,7 @@ export default function App() {
                   </label>
                   <div className="flex flex-wrap gap-1.5">
                     <button
-                      onClick={() => setActiveMood('all')}
+                      onClick={() => handleFilterChange('mood', 'all')}
                       className={`px-2.5 py-1.5 border-2 border-black font-bold text-xs uppercase transition-all cursor-pointer ${
                         activeMood === 'all'
                           ? 'bg-[#00FF00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -532,7 +556,7 @@ export default function App() {
                     {Object.entries(moodLabels).map(([key, label]) => (
                       <button
                         key={key}
-                        onClick={() => setActiveMood(key)}
+                        onClick={() => handleFilterChange('mood', key)}
                         className={`px-2.5 py-1.5 border-2 border-black font-bold text-xs uppercase transition-all cursor-pointer ${
                           activeMood === key
                             ? 'bg-[#00FF00] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
