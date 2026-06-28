@@ -1,6 +1,6 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react';
-import { Award, RefreshCw, Zap, Play, Volume2, VolumeX } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { RefreshCw, Zap, Play, Volume2, VolumeX } from 'lucide-react';
 import { getStoredUsername, saveUsername, saveGameRecord } from '../utils/db';
 
 interface IceCreamLickingProps {
@@ -8,498 +8,479 @@ interface IceCreamLickingProps {
 }
 
 interface Drip {
-  id: string;
-  x: number; // percentage width 10-90
-  y: number; // percentage height 30-80
+  id: number;
+  x: number;   // absolute pixels in canvas
+  y: number;
   size: number;
   speed: number;
-  flavor: string;
+  color: string;
 }
 
+const FLAVORS = ['#FF6B9D', '#5BC4F5', '#FFD93D', '#7CFC00', '#FF8C42'];
+const CONE_COLOR = '#C8935A';
+const SCOOP1_COLOR = '#FF6B9D'; // top
+const SCOOP2_COLOR = '#5BC4F5'; // bottom
+
 export function IceCreamLicking({ onGameFinished }: IceCreamLickingProps) {
-  const [score, setScore] = useState(0);
-  const [meltProgress, setMeltProgress] = useState(0); // 0 to 100% melted
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [username, setUsernameState] = useState(getStoredUsername());
-  const [tempName, setTempName] = useState(getStoredUsername());
-  const [isMuted, setIsMuted] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Dynamic shrinking scoop sizes
-  const [topRadius, setTopRadius] = useState(38);
-  const [bottomRadius, setBottomRadius] = useState(42);
+  const [canvasW, setCanvasW] = useState(480);
+  const canvasH = Math.round(canvasW * 1.1);
 
-  // Customizable drip falling speed selection
-  const [dripSpeedMode, setDripSpeedMode] = useState<'slow' | 'normal' | 'fast' | 'chaos'>('normal');
-  const speedMultiplierRef = useRef(1.0);
-
+  // Responsive width
   useEffect(() => {
-    switch (dripSpeedMode) {
-      case 'slow': speedMultiplierRef.current = 0.5; break;
-      case 'normal': speedMultiplierRef.current = 1.0; break;
-      case 'fast': speedMultiplierRef.current = 1.8; break;
-      case 'chaos': speedMultiplierRef.current = 2.8; break;
-    }
-  }, [dripSpeedMode]);
-
-  // Tongue and licking collision tracking
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [tonguePos, setTonguePos] = useState({ x: 150, y: 260 });
-  const [drips, setDrips] = useState<Drip[]>([]);
-  const lickCountRef = useRef(0);
-
-  // Time tracking
-  const startTimeRef = useRef<number | null>(null);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const animationFrameRef = useRef<number | null>(null);
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Audio synthesizer for satisfying lick sounds
-  const playLickSound = () => {
-    if (isMuted) return;
-    try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      // Squishy, sliding sine wave
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(380, audioCtx.currentTime + 0.12);
-
-      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
-    } catch (e) {
-      // AudioContext fallback
-    }
-  };
-
-  // Start game
-  const handleStartGame = () => {
-    saveUsername(tempName);
-    setUsernameState(tempName);
-    setGameStarted(true);
-    setGameOver(false);
-    setScore(0);
-    setMeltProgress(0);
-    setDrips([]);
-    setTopRadius(38); // Reset top radius to pristine size
-    setBottomRadius(42); // Reset bottom radius to pristine size
-    lickCountRef.current = 0;
-    setElapsedTime(0);
-    startTimeRef.current = Date.now();
-
-    // Spawn initial drips
-    spawnDrip();
-
-    // Set up game timer
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    timerIntervalRef.current = setInterval(() => {
-      setElapsedTime(prev => prev + 1);
-    }, 1000);
-  };
-
-  // Spawn fresh drips
-  const spawnDrip = () => {
-    if (gameOver) return;
-    const flavors = ['#FF6B6B', '#00FFFF', '#FFD93D']; // Strawberry, mint, vanilla
-    const newDrip: Drip = {
-      id: `drip-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      x: 30 + Math.random() * 40, // middle range
-      y: 35, // starting at bottom of scoop
-      size: 14 + Math.random() * 10,
-      speed: 0.3 + Math.random() * 0.5,
-      flavor: flavors[Math.floor(Math.random() * flavors.length)]
-    };
-    setDrips(prev => [...prev, newDrip]);
-  };
-
-  // Game loop for melt tracking and dripping physics
-  useEffect(() => {
-    if (!gameStarted || gameOver) return;
-
-    let lastTime = performance.now();
-    let dripTimer = 0;
-
-    const updatePhysics = (time: number) => {
-      const delta = (time - lastTime) / 1000;
-      lastTime = time;
-
-      // Slowly increase global melt progress
-      setMeltProgress(prev => {
-        const next = prev + delta * 2.2; // melts fully in about 45s
-        if (next >= 100) {
-          handleGameOver(true);
-          return 100;
-        }
-        return next;
-      });
-
-      // Move drips downward
-      setDrips(prevDrips => {
-        return prevDrips
-          .map(drip => ({
-            ...drip,
-            y: drip.y + drip.speed * speedMultiplierRef.current * delta * 50,
-            size: drip.size + delta * 0.4 // slowly swells as it slides
-          }))
-          // Remove if slips below cone
-          .filter(drip => drip.y < 85);
-      });
-
-      // Periodically spawn new drips
-      dripTimer += delta;
-      if (dripTimer > 1.8) {
-        spawnDrip();
-        dripTimer = 0;
+    const update = () => {
+      if (wrapperRef.current) {
+        const w = Math.min(wrapperRef.current.clientWidth, 560);
+        setCanvasW(w);
       }
-
-      animationFrameRef.current = requestAnimationFrame(updatePhysics);
     };
-
-    animationFrameRef.current = requestAnimationFrame(updatePhysics);
-
-    return () => {
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-    };
-  }, [gameStarted, gameOver]);
-
-  // Track mouse and map to tongue movement
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!gameStarted || gameOver || !containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    setTonguePos({ x, y });
-
-    // Collision detection with drips (lick them up!)
-    setDrips(prevDrips => {
-      let hitAny = false;
-      const remainingDrips = prevDrips.filter(drip => {
-        // Convert percentage coordinates of drip to absolute container pixels
-        const dripX = (drip.x / 100) * rect.width;
-        const dripY = (drip.y / 100) * rect.height;
-
-        const dist = Math.hypot(x - dripX, y - dripY);
-        const touchRadius = drip.size + 15; // padding for lick radius
-
-        if (dist < touchRadius) {
-          hitAny = true;
-          setScore(prev => prev + Math.round(drip.size));
-          lickCountRef.current += 1;
-          // Gradually shrink scoop sizes slightly upon licking drops
-          setTopRadius(r => Math.max(5, r - 0.4));
-          setBottomRadius(r => Math.max(6, r - 0.3));
-          return false; // remove drip (licked!)
-        }
-        return true;
-      });
-
-      if (hitAny) {
-        playLickSound();
-      }
-      return remainingDrips;
-    });
-
-    // Also allow licking the main scoops directly for smaller score increments
-    // Scoop centers: top is (midX, 110), bottom is (midX, 160).
-    const containerWidth = rect.width;
-    const midX = containerWidth / 2;
-    const distToTopScoop = Math.hypot(x - midX, y - 110);
-    const distToBottomScoop = Math.hypot(x - midX, y - 160);
-
-    if (distToTopScoop < topRadius + 15 || distToBottomScoop < bottomRadius + 15) {
-      if (Math.random() < 0.12) { // rate limit scoop licking
-        setScore(prev => prev + 3);
-        lickCountRef.current += 1;
-        playLickSound();
-        // Slightly delay melting when active licking scoop
-        setMeltProgress(prev => Math.max(0, prev - 0.8));
-
-        // Directly shrink the scoop being licked!
-        if (distToTopScoop < topRadius + 15) {
-          setTopRadius(r => Math.max(3, r - 1.2));
-        } else {
-          setBottomRadius(r => Math.max(4, r - 1.0));
-        }
-      }
-    }
-  };
-
-  const handleGameOver = (meltedOut: boolean) => {
-    setGameOver(true);
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-
-    const duration = startTimeRef.current ? Math.floor((Date.now() - startTimeRef.current) / 1000) : 15;
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
-    const timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
-
-    const finalScore = score;
-    const totalLicks = lickCountRef.current;
-    const shrinkPercentage = Math.round(((38 - topRadius) + (42 - bottomRadius)) / (38 + 42) * 100);
-    
-    let humorousText = `I spent ${timeString} performing ASMR sensory therapy, licking and shrinking a virtual ice cream on boredmaster.com! I successfully ate ${shrinkPercentage}% of the scoop volumes, scoring ${finalScore} points with ${totalLicks} precise licks in ${dripSpeedMode.toUpperCase()} mode!`;
-
-    // Save game record to local DB
-    saveGameRecord('act-icecream', username, finalScore, duration);
-
-    setTimeout(() => {
-      onGameFinished(finalScore, duration, humorousText);
-    }, 1500);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
   }, []);
 
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [meltProgress, setMeltProgress] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [dripSpeedMode, setDripSpeedMode] = useState<'slow'|'normal'|'fast'|'chaos'>('normal');
+  const [username, setUsernameState] = useState(getStoredUsername());
+  const [tempName, setTempName] = useState(getStoredUsername());
+
+  // Mutable refs for game loop
+  const dripsRef = useRef<Drip[]>([]);
+  const tongueRef = useRef({ x: -999, y: -999 });
+  const scoreRef = useRef(0);
+  const meltRef = useRef(0);
+  const lickCountRef = useRef(0);
+  const dripIdRef = useRef(0);
+  const speedModeRef = useRef(dripSpeedMode);
+  const gameOverRef = useRef(false);
+  const startTimeRef = useRef<number|null>(null);
+  const rafRef = useRef<number|null>(null);
+  const timerRef = useRef<NodeJS.Timeout|null>(null);
+  const isMutedRef = useRef(isMuted);
+
+  // Scoop sizes (shrink as you lick)
+  const scoop1R = useRef(0); // top scoop radius
+  const scoop2R = useRef(0); // bottom scoop radius
+
+  useEffect(() => { speedModeRef.current = dripSpeedMode; }, [dripSpeedMode]);
+  useEffect(() => { isMutedRef.current = isMuted; }, [isMuted]);
+
+  // ── Derived geometry (all relative to canvasW) ────────────────────────────
+  const geo = useCallback((w: number) => {
+    const h = Math.round(w * 1.1);
+    const cx = w / 2;
+    const baseR = w * 0.16;
+    const s2y = h * 0.38; // bottom scoop center Y
+    const s1y = s2y - baseR * 1.55; // top scoop center Y
+    const coneTop = s2y + baseR * 0.85;
+    const coneTip = { x: cx, y: h * 0.93 };
+    return { cx, baseR, s1y, s2y, coneTop, coneTip, h };
+  }, []);
+
+  // ── Audio ─────────────────────────────────────────────────────────────────
+  const playLick = useCallback(() => {
+    if (isMutedRef.current) return;
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(180, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(420, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.start(); osc.stop(ctx.currentTime + 0.12);
+    } catch {}
+  }, []);
+
+  // ── Draw ──────────────────────────────────────────────────────────────────
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    const { cx, s1y, s2y, coneTop, coneTip } = geo(w);
+    const r1 = scoop1R.current;
+    const r2 = scoop2R.current;
+
+    // Sky bg
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, '#E0F4FF');
+    grad.addColorStop(1, '#FFF5E0');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Cone
+    ctx.beginPath();
+    ctx.moveTo(cx - r2 * 1.05, coneTop);
+    ctx.lineTo(coneTip.x, coneTip.y);
+    ctx.lineTo(cx + r2 * 1.05, coneTop);
+    ctx.closePath();
+    ctx.fillStyle = CONE_COLOR;
+    ctx.fill();
+    ctx.strokeStyle = '#5C3D11';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Waffle lines
+    ctx.strokeStyle = '#A0673A';
+    ctx.lineWidth = 1;
+    for (let i = 1; i < 4; i++) {
+      const t = i / 4;
+      const lx1 = cx - r2 * 1.05 * (1 - t) - coneTip.x * t + coneTip.x;
+      const lx2 = cx + r2 * 1.05 * (1 - t) + coneTip.x * t - coneTip.x;
+      const ly = coneTop + (coneTip.y - coneTop) * t;
+      ctx.beginPath(); ctx.moveTo(lx1 - w*0.01, ly); ctx.lineTo(lx2 + w*0.01, ly); ctx.stroke();
+    }
+
+    // Bottom scoop
+    if (r2 > 2) {
+      const g2 = ctx.createRadialGradient(cx - r2*0.25, s2y - r2*0.3, r2*0.1, cx, s2y, r2);
+      g2.addColorStop(0, '#A8E8FF');
+      g2.addColorStop(1, SCOOP2_COLOR);
+      ctx.beginPath();
+      ctx.arc(cx, s2y, r2, 0, Math.PI * 2);
+      ctx.fillStyle = g2;
+      ctx.fill();
+      ctx.strokeStyle = '#1A5F7A';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    // Top scoop
+    if (r1 > 2) {
+      const g1 = ctx.createRadialGradient(cx - r1*0.25, s1y - r1*0.3, r1*0.1, cx, s1y, r1);
+      g1.addColorStop(0, '#FFAACF');
+      g1.addColorStop(1, SCOOP1_COLOR);
+      ctx.beginPath();
+      ctx.arc(cx, s1y, r1, 0, Math.PI * 2);
+      ctx.fillStyle = g1;
+      ctx.fill();
+      ctx.strokeStyle = '#8B2252';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    // Sprinkles on top scoop
+    if (r1 > 10) {
+      const sprinkleColors = ['#FF6B6B','#FFD93D','#00FF00','#00BFFF','#FF69B4'];
+      for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2;
+        const dist = r1 * (0.35 + (i % 3) * 0.2);
+        const sx = cx + Math.cos(angle) * dist;
+        const sy = s1y + Math.sin(angle) * dist * 0.6;
+        ctx.save();
+        ctx.translate(sx, sy);
+        ctx.rotate(angle + Math.PI / 4);
+        ctx.fillStyle = sprinkleColors[i % sprinkleColors.length];
+        ctx.fillRect(-w*0.012, -w*0.004, w*0.024, w*0.008);
+        ctx.restore();
+      }
+    }
+
+    // Drips
+    dripsRef.current.forEach(drip => {
+      const dg = ctx.createRadialGradient(drip.x - drip.size*0.3, drip.y - drip.size*0.3, 1, drip.x, drip.y, drip.size);
+      dg.addColorStop(0, drip.color + 'DD');
+      dg.addColorStop(1, drip.color + '99');
+      ctx.beginPath();
+      ctx.arc(drip.x, drip.y, drip.size, 0, Math.PI * 2);
+      ctx.fillStyle = dg;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Tongue cursor
+    const tx = tongueRef.current.x;
+    const ty = tongueRef.current.y;
+    if (tx > 0 && !gameOverRef.current) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(tx, ty, w*0.05, w*0.035, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#FF69B4';
+      ctx.fill();
+      ctx.strokeStyle = '#C2185B';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Center line
+      ctx.beginPath();
+      ctx.moveTo(tx, ty - w*0.025);
+      ctx.lineTo(tx, ty + w*0.025);
+      ctx.strokeStyle = '#C2185B';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Melt bar overlay at top
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(0, 0, w, w * 0.055);
+    ctx.fillStyle = `hsl(${120 - meltRef.current * 1.2}, 90%, 50%)`;
+    ctx.fillRect(0, 0, w * (meltRef.current / 100), w * 0.055);
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.round(w*0.025)}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(`🍦 MELT: ${Math.round(meltRef.current)}%  |  SCORE: ${scoreRef.current}`, w/2, w * 0.038);
+  }, [geo]);
+
+  // ── Game loop ─────────────────────────────────────────────────────────────
+  const gameLoop = useCallback(() => {
+    if (gameOverRef.current) return;
+
+    const speedMult = { slow: 0.45, normal: 1.0, fast: 1.8, chaos: 2.8 }[speedModeRef.current];
+
+    // Melt progress
+    meltRef.current += 0.035 * speedMult;
+    if (meltRef.current >= 100) {
+      meltRef.current = 100;
+      endGame();
+      return;
+    }
+
+    // Move drips
+    dripsRef.current = dripsRef.current
+      .map(d => ({
+        ...d,
+        y: d.y + d.speed * speedMult,
+        size: Math.min(d.size + 0.08, 28)
+      }))
+      .filter(d => d.y < canvasRef.current!.height * 0.92);
+
+    // Spawn drip (inlined — avoids stale closure on spawnDrip)
+    if (Math.random() < 0.012 * speedMult) {
+      const sw = canvasRef.current?.width ?? 480;
+      const sg = geo(sw);
+      dripsRef.current.push({
+        id: dripIdRef.current++,
+        x: sg.cx + (Math.random() - 0.5) * sg.baseR * 1.6,
+        y: sg.s2y - sg.baseR * 0.3,
+        size: sw * 0.025 + Math.random() * sw * 0.018,
+        speed: (0.6 + Math.random() * 0.8) * (sw / 480),
+        color: FLAVORS[Math.floor(Math.random() * FLAVORS.length)]
+      });
+    }
+
+    // Tongue collision
+    const { cx, s1y, s2y } = geo(canvasRef.current?.width ?? canvasW);
+    const tx = tongueRef.current.x;
+    const ty = tongueRef.current.y;
+    const tongueR = canvasW * 0.055;
+
+    let hit = false;
+    dripsRef.current = dripsRef.current.filter(d => {
+      const dist = Math.hypot(tx - d.x, ty - d.y);
+      if (dist < tongueR + d.size) {
+        scoreRef.current += Math.round(d.size * 2);
+        setScore(scoreRef.current);
+        lickCountRef.current++;
+        meltRef.current = Math.max(0, meltRef.current - 1.2);
+        hit = true;
+        return false;
+      }
+      return true;
+    });
+
+    // Lick scoops directly
+    if (!hit) {
+      const d1 = Math.hypot(tx - cx, ty - s1y);
+      const d2 = Math.hypot(tx - cx, ty - s2y);
+      if (d1 < scoop1R.current + tongueR * 0.6 || d2 < scoop2R.current + tongueR * 0.6) {
+        if (Math.random() < 0.08) {
+          scoreRef.current += 2;
+          setScore(scoreRef.current);
+          lickCountRef.current++;
+          meltRef.current = Math.max(0, meltRef.current - 0.5);
+          if (d1 < scoop1R.current + tongueR * 0.6) scoop1R.current = Math.max(4, scoop1R.current - 0.8);
+          else scoop2R.current = Math.max(6, scoop2R.current - 0.8);
+          hit = true;
+        }
+      }
+    }
+
+    if (hit) playLick();
+
+    draw();
+    rafRef.current = requestAnimationFrame(gameLoop);
+  }, [geo, canvasW, draw, playLick]);
+
+  const endGame = useCallback(() => {
+    gameOverRef.current = true;
+    setGameOver(true);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+    const duration = startTimeRef.current ? Math.floor((Date.now() - startTimeRef.current) / 1000) : 15;
+    const finalScore = scoreRef.current;
+    const text = `I scored ${finalScore} points licking a melting ice cream for ${duration}s with ${lickCountRef.current} licks on boredmaster.com!`;
+    saveGameRecord('act-icecream', username, finalScore, duration);
+    setTimeout(() => onGameFinished(finalScore, duration, text), 1000);
+  }, [username, onGameFinished]);
+
+  // ── Start ─────────────────────────────────────────────────────────────────
+  const handleStart = () => {
+    saveUsername(tempName);
+    setUsernameState(tempName);
+
+    const w = canvasRef.current?.width ?? canvasW;
+    const { baseR } = geo(w);
+    scoop1R.current = baseR;
+    scoop2R.current = baseR * 1.1;
+
+    dripsRef.current = [];
+    scoreRef.current = 0;
+    meltRef.current = 0;
+    lickCountRef.current = 0;
+    gameOverRef.current = false;
+    startTimeRef.current = Date.now();
+
+    setScore(0);
+    setMeltProgress(0);
+    setElapsedTime(0);
+    setGameOver(false);
+    setGameStarted(true);
+
+    timerRef.current = setInterval(() => setElapsedTime(t => t + 1), 1000);
+    rafRef.current = requestAnimationFrame(gameLoop);
+  };
+
+  // Restart
+  const handleRestart = () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+    setGameStarted(false);
+    setGameOver(false);
+  };
+
+  useEffect(() => () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+  }, []);
+
+  // Restart game loop when gameLoop reference changes (canvasW changes)
+  useEffect(() => {
+    if (gameStarted && !gameOver && !gameOverRef.current) {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(gameLoop);
+    }
+  }, [gameLoop]);
+
+  // ── Mouse / touch tracking ────────────────────────────────────────────────
+  const getPos = (e: React.MouseEvent | React.TouchEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if ('touches' in e) {
+      return {
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY
+      };
+    }
+    return {
+      x: ((e as React.MouseEvent).clientX - rect.left) * scaleX,
+      y: ((e as React.MouseEvent).clientY - rect.top) * scaleY
+    };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const p = getPos(e);
+    if (p) tongueRef.current = p;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    const p = getPos(e);
+    if (p) tongueRef.current = p;
+  };
+
   return (
-    <div className="bg-white p-5 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-full text-black flex flex-col items-center">
-      
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-2">
+    <div className="bg-white p-4 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black flex flex-col items-center gap-4">
+      <div className="flex items-center gap-2">
         <Zap className="w-5 h-5 text-[#FF6B6B] animate-pulse" />
-        <h3 className="text-sm font-black uppercase tracking-widest text-black">Satisfying Ice Cream Lick</h3>
+        <h3 className="text-sm font-black uppercase tracking-widest">Ice Cream Licking ASMR</h3>
       </div>
 
-      <p className="text-xs text-black/70 font-semibold max-w-md text-center mb-4">
-        Keep the ice cream from melting by licking the flowing drips! Move your mouse (the tongue 👅) across the scoops and drips to clear them with satisfying sounds.
-      </p>
-
       {!gameStarted ? (
-        <div className="w-full max-w-[320px] bg-[#E9E9E9] border-4 border-black p-5 flex flex-col gap-4 text-center">
-          <div className="text-4xl">🍦👅</div>
-          <div>
-            <h4 className="text-sm font-black uppercase">Enter Your Code Name</h4>
-            <p className="text-[10px] text-black/60 font-semibold mt-0.5">
-              To record your score on the live leaderboards
-            </p>
-          </div>
-
+        <div className="w-full max-w-sm bg-[#E9E9E9] border-4 border-black p-5 flex flex-col gap-4 text-center">
+          <div className="text-5xl">🍦👅</div>
+          <h4 className="text-sm font-black uppercase">Enter Your Code Name</h4>
           <input
             type="text"
             value={tempName}
-            onChange={(e) => setTempName(e.target.value.slice(0, 15))}
-            placeholder="e.g. Anonym123"
-            className="w-full bg-white border-2 border-black rounded-none px-3 py-2 text-xs font-bold focus:outline-none focus:bg-[#00FF00] text-black text-center"
+            onChange={e => setTempName(e.target.value.slice(0, 15))}
+            placeholder="e.g. LickLegend"
+            className="w-full bg-white border-2 border-black px-3 py-2 text-xs font-bold focus:outline-none focus:bg-[#00FF00] text-center"
           />
-
-          {/* Drip falling speed control */}
           <div className="space-y-1 text-left">
-            <span className="text-[10px] font-black uppercase text-black/60">Drip Falling Speed</span>
+            <span className="text-[10px] font-black uppercase text-black/60">Drip Speed</span>
             <div className="grid grid-cols-4 gap-1">
-              {(['slow', 'normal', 'fast', 'chaos'] as const).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setDripSpeedMode(mode)}
-                  className={`border-2 border-black py-1 px-0.5 text-[9px] font-black uppercase text-center transition-all cursor-pointer ${
-                    dripSpeedMode === mode
-                      ? 'bg-[#FF6B6B] text-white shadow-[1px_1px_0px_rgba(0,0,0,1)]'
-                      : 'bg-white text-black hover:bg-neutral-100'
-                  }`}
-                >
-                  {mode === 'slow' ? '🐌 Slow' : mode === 'normal' ? '🍦 Normal' : mode === 'fast' ? '⚡ Fast' : '🔥 Chaos'}
+              {(['slow','normal','fast','chaos'] as const).map(m => (
+                <button key={m} onClick={() => setDripSpeedMode(m)}
+                  className={`border-2 border-black py-1.5 text-[10px] font-black uppercase cursor-pointer transition-all ${dripSpeedMode === m ? 'bg-[#FF6B6B] text-white' : 'bg-white text-black hover:bg-neutral-100'}`}>
+                  {m === 'slow' ? '🐌' : m === 'normal' ? '🍦' : m === 'fast' ? '⚡' : '🔥'}<br/>{m}
                 </button>
               ))}
             </div>
           </div>
-
-          <button
-            onClick={handleStartGame}
-            className="w-full bg-[#FFD93D] text-black border-2 border-black font-black uppercase text-xs py-2.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:shadow-none transition-all cursor-pointer flex items-center justify-center gap-1.5"
-          >
-            <Play className="w-3.5 h-3.5 fill-black" />
-            <span>Start Licking Game</span>
+          <button onClick={handleStart}
+            className="w-full bg-[#FFD93D] border-2 border-black font-black uppercase text-xs py-2.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-px hover:shadow-none transition-all cursor-pointer flex items-center justify-center gap-2">
+            <Play className="w-3.5 h-3.5 fill-black" /> Start Licking
           </button>
         </div>
       ) : (
-        <div className="w-full flex flex-col items-center">
-          
-          {/* Top Panel stats */}
-          <div className="w-full max-w-[320px] flex items-center justify-between mb-3 text-xs font-black uppercase font-mono">
-            <span className="flex items-center gap-1">
-              Score: <b className="bg-[#00FF00] px-1.5 py-0.5 border border-black">{score}</b>
-            </span>
-            <button
-              onClick={() => setIsMuted(!isMuted)}
-              className="p-1 border border-black bg-white hover:bg-black hover:text-white"
-              title={isMuted ? 'Unmute' : 'Mute'}
-            >
-              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-            </button>
-            <span className="text-[10px] text-black/60">
-              Time: {elapsedTime}s
-            </span>
-          </div>
-
-          {/* Satisfying Melting Progress Bar */}
-          <div className="w-full max-w-[320px] h-4 border-2 border-black bg-[#E9E9E9] mb-3 relative overflow-hidden">
-            <div 
-              className="h-full bg-red-500 transition-all duration-100 ease-linear"
-              style={{ width: `${meltProgress}%` }}
-            />
-            <span className="absolute inset-0 flex items-center justify-center text-[9px] font-black uppercase tracking-wider text-black mix-blend-difference">
-              Melting Progress: {Math.round(meltProgress)}%
-            </span>
-          </div>
-
-          {/* Real-time Game Speed Modifier Panel */}
-          <div className="w-full max-w-[320px] flex items-center justify-between gap-1 mb-4 bg-[#E9E9E9]/40 border-2 border-black p-1.5 font-mono text-[9px] font-black uppercase text-black">
-            <span>Drip Speed:</span>
-            <div className="flex gap-1">
-              {(['slow', 'normal', 'fast', 'chaos'] as const).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setDripSpeedMode(mode)}
-                  className={`border-2 px-2 py-0.5 text-[8px] font-black uppercase transition-all cursor-pointer ${
-                    dripSpeedMode === mode
-                      ? 'bg-[#FF6B6B] text-white border-black shadow-[1px_1px_0px_rgba(0,0,0,1)]'
-                      : 'bg-white border-black/40 text-black hover:bg-neutral-100'
-                  }`}
-                >
-                  {mode === 'slow' ? '🐌 Slow' : mode === 'normal' ? '🍦 Normal' : mode === 'fast' ? '⚡ Fast' : '🔥 Chaos'}
+        <div ref={wrapperRef} className="w-full flex flex-col items-center gap-2">
+          {/* Controls bar */}
+          <div className="w-full flex items-center justify-between text-xs font-black">
+            <div className="flex gap-2">
+              {(['slow','normal','fast','chaos'] as const).map(m => (
+                <button key={m} onClick={() => setDripSpeedMode(m)}
+                  className={`border border-black px-2 py-0.5 text-[9px] font-black uppercase cursor-pointer ${dripSpeedMode === m ? 'bg-[#FF6B6B] text-white' : 'bg-white text-black'}`}>
+                  {m === 'slow' ? '🐌' : m === 'normal' ? '🍦' : m === 'fast' ? '⚡' : '🔥'}
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Interactive Sensory Canvas */}
-          <div
-            ref={containerRef}
-            onMouseMove={handleMouseMove}
-            className="w-full max-w-[320px] h-[340px] bg-sky-100 border-4 border-black relative overflow-hidden cursor-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-          >
-            {/* Sky / Cloud atmosphere */}
-            <div className="absolute top-2 left-3 text-[9px] font-black text-blue-400 select-none uppercase tracking-widest opacity-40">
-              ASMR SENSORY LAB
+            <div className="flex items-center gap-2">
+              <span className="font-mono">{elapsedTime}s</span>
+              <button onClick={() => setIsMuted(v => !v)} className="p-1 border border-black bg-white">
+                {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              </button>
+              <button onClick={handleRestart} className="p-1 border border-black bg-white">
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
             </div>
-
-            {/* SVG Ice Cream Graphics */}
-            <svg className="w-full h-full select-none pointer-events-none">
-              {/* Cone */}
-              <polygon
-                points="160,280 120,190 200,190"
-                fill="#D2B48C"
-                stroke="black"
-                strokeWidth="3.5"
-                strokeLinejoin="round"
-              />
-              {/* Waffle grid inside cone */}
-              <line x1="130" y1="212" x2="190" y2="212" stroke="black" strokeWidth="1.5" strokeDasharray="2,2" />
-              <line x1="140" y1="235" x2="180" y2="235" stroke="black" strokeWidth="1.5" strokeDasharray="2,2" />
-              <line x1="150" y1="258" x2="170" y2="258" stroke="black" strokeWidth="1.5" strokeDasharray="2,2" />
-              <line x1="160" y1="190" x2="160" y2="280" stroke="black" strokeWidth="1" opacity="0.3" />
-
-              {/* Melting cream overflow base */}
-              <path
-                d="M 115,190 Q 140,205 160,195 Q 180,205 205,190"
-                fill="#FFD93D"
-                stroke="black"
-                strokeWidth="3.5"
-              />
-
-              {/* Bottom Scoop - Vanilla / Yellow */}
-              <circle cx="160" cy="160" r={bottomRadius} fill="#FFD93D" stroke="black" strokeWidth="3.5" />
-
-              {/* Top Scoop - Mint / Cyan */}
-              <circle cx="160" cy="115" r={topRadius} fill="#00FFFF" stroke="black" strokeWidth="3.5" />
-
-              {/* Cherry on top with dynamic position sliding down */}
-              {topRadius > 5 && (
-                <>
-                  <circle cx="160" cy={115 - topRadius - 5} r={Math.max(3, topRadius * 0.26)} fill="#FF4B4B" stroke="black" strokeWidth="3" />
-                  <path
-                    d={`M 160,${115 - topRadius - 5 - 10} Q 165,${115 - topRadius - 5 - 24} 175,${115 - topRadius - 5 - 27}`}
-                    fill="none"
-                    stroke="black"
-                    strokeWidth="2.5"
-                  />
-                </>
-              )}
-
-              {/* Dynamic falling drips rendered as SVG circles with trails */}
-              {drips.map((drip) => {
-                const absoluteX = (drip.x / 100) * 320;
-                const absoluteY = (drip.y / 100) * 340;
-                return (
-                  <g key={drip.id}>
-                    {/* Drip trail */}
-                    <line
-                      x1={absoluteX}
-                      y1={absoluteY - drip.size}
-                      x2={absoluteX}
-                      y2={absoluteY}
-                      stroke={drip.flavor}
-                      strokeWidth={drip.size * 0.7}
-                      strokeLinecap="round"
-                    />
-                    {/* Main drip head */}
-                    <circle
-                      cx={absoluteX}
-                      cy={absoluteY}
-                      r={drip.size / 2}
-                      fill={drip.flavor}
-                      stroke="black"
-                      strokeWidth="2.5"
-                    />
-                  </g>
-                );
-              })}
-
-              {/* Satisfying Tongue 👅 following mouse */}
-              <g transform={`translate(${tonguePos.x}, ${tonguePos.y})`}>
-                {/* Tongue shape */}
-                <path
-                  d="M -18,-15 C -18,-35 18,-35 18,-15 C 18,10 0,22 0,22 C 0,22 -18,10 -18,-15 Z"
-                  fill="#FF80A0"
-                  stroke="black"
-                  strokeWidth="3"
-                />
-                {/* Tongue center fold line */}
-                <line x1="0" y1="-26" x2="0" y2="4" stroke="black" strokeWidth="2" opacity="0.6" />
-                {/* Saliva shines */}
-                <ellipse cx="-6" cy="-18" rx="3" ry="5" fill="white" opacity="0.7" />
-              </g>
-            </svg>
-
-            {/* Touch lick prompt */}
-            {drips.length === 0 && !gameOver && (
-              <div className="absolute inset-x-0 bottom-6 text-center select-none pointer-events-none text-[10px] font-black uppercase text-black bg-white/80 py-1 px-3 border border-black max-w-[200px] mx-auto">
-                Move Tongue over scoops to lick!
-              </div>
-            )}
-
-            {/* Game Over Panel overlay */}
-            {gameOver && (
-              <div className="absolute inset-0 bg-black/75 flex flex-col items-center justify-center text-center p-4">
-                <div className="text-white text-base font-black uppercase">Ice Cream Melted! 🫠</div>
-                <div className="text-[#00FF00] font-mono text-xs font-black mt-1">Licks: {lickCountRef.current}</div>
-                <div className="text-zinc-300 text-[10px] mt-1.5 max-w-xs">
-                  Your score card has been recorded! Preparing scorecard...
-                </div>
-              </div>
-            )}
           </div>
 
-          <button
-            onClick={handleStartGame}
-            className="mt-4 flex items-center gap-1.5 px-3 py-1.5 border-2 border-black bg-[#00FF00] hover:bg-black hover:text-white text-black font-black uppercase transition-all text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] cursor-pointer"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Reset Cone</span>
-          </button>
+          {/* Canvas — full width */}
+          <canvas
+            ref={canvasRef}
+            width={canvasW}
+            height={canvasH}
+            style={{ width: '100%', cursor: 'none', display: 'block', border: '3px solid black', borderRadius: 8, touchAction: 'none' }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => { tongueRef.current = { x: -999, y: -999 }; }}
+            onTouchMove={handleTouchMove}
+          />
+
+          {gameOver && (
+            <div className="w-full bg-[#FFD93D] border-2 border-black p-3 text-center font-black uppercase text-sm">
+              🍦 Melted! Score: {score} pts — {lickCountRef.current} licks
+            </div>
+          )}
+          <p className="text-[10px] text-black/40 uppercase tracking-widest font-bold">
+            Move mouse/finger over drips to lick them 👅
+          </p>
         </div>
       )}
     </div>
