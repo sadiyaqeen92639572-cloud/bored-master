@@ -637,6 +637,66 @@ export const activities: Activity[] = [
       'Add a drop shadow 2px to the right and bottom.',
       'Try a second word — it already looks better. Keep going.'
     ]
+  },
+  {
+    id: 'act-shake-decide',
+    title: '📳 Shake to Decide',
+    description: 'Can\'t make a decision? Shake your phone and let the universe (and accelerometer) decide for you. Yes or No. Final answer.',
+    contexts: ['home', 'friends', 'night'],
+    durations: ['30s'],
+    moods: ['funny', 'chill', 'social'],
+    devices: ['phone'],
+    risk: 'safe',
+    interactiveType: 'shake_decide',
+    steps: ['Think of your yes/no question.', 'Shake your phone 3 times.', 'Accept the verdict. No renegotiating.']
+  },
+  {
+    id: 'act-tap-speed',
+    title: '⚡ Tap Speed Test',
+    description: 'How fast can you tap? 10 seconds. Maximum effort. Prove your thumbs are elite.',
+    contexts: ['home', 'class', 'work', 'friends'],
+    durations: ['30s'],
+    moods: ['productive', 'funny', 'social'],
+    devices: ['phone', 'computer'],
+    risk: 'safe',
+    interactiveType: 'tap_speed',
+    steps: ['Tap the big button to start the 10-second countdown.', 'Tap as fast as humanly possible.', 'Check your taps-per-second score and rating.']
+  },
+  {
+    id: 'act-tilt-maze',
+    title: '🕹️ Phone Tilt Maze',
+    description: 'Tilt your phone to roll the ball to the target. No touching the screen — pure physics vibes.',
+    contexts: ['home', 'class', 'friends'],
+    durations: ['5m', '15m'],
+    moods: ['productive', 'chill'],
+    devices: ['phone'],
+    risk: 'safe',
+    interactiveType: 'tilt_maze',
+    steps: ['Grant motion sensor permission when prompted.', 'Tilt your phone to roll the yellow ball toward the green target.', 'Avoid the walls. Beat all 5 levels.']
+  },
+  {
+    id: 'act-thumb-draw',
+    title: '👍 One-Thumb Drawing',
+    description: 'A drawing canvas built for one thumb. Big colors, fat brushes, zero precision required. Pure mobile art chaos.',
+    contexts: ['home', 'class', 'night'],
+    durations: ['5m', '15m'],
+    moods: ['chill', 'funny'],
+    devices: ['phone'],
+    risk: 'safe',
+    interactiveType: 'thumb_draw',
+    steps: ['Pick a color from the bottom palette.', 'Draw with your thumb on the canvas.', 'Download your masterpiece (or delete it in shame).']
+  },
+  {
+    id: 'act-swipe-reaction',
+    title: '👈👉 Swipe Reaction Game',
+    description: 'Swipe left or right before the round ends. 15 rounds. Speed + accuracy. Your thumbs have never been tested like this.',
+    contexts: ['home', 'class', 'friends', 'night'],
+    durations: ['5m'],
+    moods: ['funny', 'productive', 'social'],
+    devices: ['phone', 'computer'],
+    risk: 'safe',
+    interactiveType: 'swipe_reaction',
+    steps: ['Read the on-screen direction prompt.', 'Swipe left or right accordingly (or use arrow keys).', 'Score as many correct swipes as possible in 15 rounds.']
   }
 ];
 

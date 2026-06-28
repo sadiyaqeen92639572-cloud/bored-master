@@ -11,6 +11,11 @@ import { Connect4 } from './Connect4';
 import { IceCreamLicking } from './IceCreamLicking';
 import { SoapCarver } from './SoapCarver';
 import { GrassCutter } from './GrassCutter';
+import { ShakeToDecide } from './ShakeToDecide';
+import { TapSpeedTest } from './TapSpeedTest';
+import { PhoneTiltMaze } from './PhoneTiltMaze';
+import { ThumbDraw } from './ThumbDraw';
+import { SwipeReactionGame } from './SwipeReactionGame';
 
 interface ActivityCardProps {
   activity: Activity;
@@ -140,6 +145,19 @@ export function ActivityCard({
             )}
             {activity.interactiveType === 'grass_cutter' && (
               <GrassCutter onGameFinished={(score, duration, summary) => onGameFinished?.(score, duration, summary)} />
+            )}
+            {activity.interactiveType === 'shake_decide' && (
+              <ShakeToDecide onGameFinished={(score, duration, summary) => onGameFinished?.(score, duration, summary)} />
+            )}
+            {activity.interactiveType === 'tap_speed' && (
+              <TapSpeedTest onGameFinished={(score, duration, summary) => onGameFinished?.(score, duration, summary)} />
+            )}
+            {activity.interactiveType === 'tilt_maze' && (
+              <PhoneTiltMaze onGameFinished={(score, duration, summary) => onGameFinished?.(score, duration, summary)} />
+            )}
+            {activity.interactiveType === 'thumb_draw' && <ThumbDraw />}
+            {activity.interactiveType === 'swipe_reaction' && (
+              <SwipeReactionGame onGameFinished={(score, duration, summary) => onGameFinished?.(score, duration, summary)} />
             )}
           </div>
         )}

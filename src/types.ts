@@ -7,7 +7,7 @@ export interface Activity {
   moods: ('chill' | 'funny' | 'productive' | 'social' | 'secret')[];
   devices: ('phone' | 'computer' | 'paper' | 'offline')[];
   risk: 'safe' | 'medium' | 'loud';
-  interactiveType?: 'doodle' | 'stealth' | 'bubbles' | 'truth_dare' | 'tictactoe' | 'connect4' | 'icecream' | 'soap_carver' | 'grass_cutter';
+  interactiveType?: 'doodle' | 'stealth' | 'bubbles' | 'truth_dare' | 'tictactoe' | 'connect4' | 'icecream' | 'soap_carver' | 'grass_cutter' | 'shake_decide' | 'tap_speed' | 'tilt_maze' | 'thumb_draw' | 'swipe_reaction';
   steps?: string[];
   externalLink?: string;
   author?: string;
