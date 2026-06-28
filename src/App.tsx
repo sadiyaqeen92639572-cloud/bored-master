@@ -44,6 +44,17 @@ export default function App() {
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(getInitialActivity());
   const [isStealthActive, setIsStealthActive] = useState(false);
 
+  // Auto-scroll to activity card when loaded via ?activity= URL param
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('activity')) {
+      setTimeout(() => {
+        document.getElementById('main-activity-view')?.scrollIntoView({ behavior: 'smooth' });
+      }, 600);
+    }
+  }, []);
+
   // Filter States
   const [activeContext, setActiveContext] = useState<string>('all');
   const [activeDuration, setActiveDuration] = useState<string>('all');
