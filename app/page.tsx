@@ -28,45 +28,45 @@ const jsonLd = {
 }
 
 // ─── Static activity data for SEO ─────────────────────────────────────────────
-const activitySEOData: Record<string, { icon: string; joke: string }> = {
-  'act-connect4':           { icon: '🤖', joke: 'Beat the robot. If you lose, it doesn\'t count.' },
-  'act-icecream':           { icon: '🍦', joke: 'Lick pixels. Zero calories. Infinite satisfaction.' },
-  'act-soap-carver':        { icon: '🧼', joke: 'Adult stress toy. Do not judge.' },
-  'act-grass-cutter':       { icon: '🌿', joke: 'The grass is always greener on your screen.' },
-  'act-stealth-work':       { icon: '🕵️', joke: 'The fake spreadsheet that saved careers.' },
-  'act-doodle-creative':    { icon: '🎨', joke: 'Picasso also started in class. Probably.' },
-  'act-bubble-pop':         { icon: '🫧', joke: 'Therapy. Free. No appointment needed.' },
-  'act-truth-dare':         { icon: '🔥', joke: 'Warning: friendships may not survive.' },
-  'act-tictactoe-ai':       { icon: '❌', joke: 'The AI is unbeatable. Or is it?' },
-  'act-class-alphabet':     { icon: '🔤', joke: 'A, B, C... actually harder than it sounds.' },
-  'act-class-doodle-story': { icon: '📝', joke: 'Shakespeare started somewhere. Probably a napkin.' },
-  'act-class-finger-gym':   { icon: '🖐️', joke: 'Become a hand wizard. Completely free skill.' },
-  'act-class-pen-spinning': { icon: '🖊️', joke: 'One trick away from becoming a classroom legend.' },
-  'act-home-wikipedia':     { icon: '🌐', joke: 'Warning: you WILL learn extremely weird facts.' },
-  'act-home-museum':        { icon: '🏛️', joke: 'Free museum. No gift shop guilt.' },
-  'act-home-origami':       { icon: '📐', joke: 'Instructions included. You\'ll still mess up fold 3.' },
-  'act-home-declutter':     { icon: '🧹', joke: 'Marie Kondo speedrun. 5 items. Go.' },
-  'act-work-desk-stretch':  { icon: '🧘', joke: 'Your coworkers have absolutely no idea.' },
-  'act-work-email-cleanup': { icon: '📥', joke: 'Digital cleanse. Extremely satisfying.' },
-  'act-work-type-racer':    { icon: '⌨️', joke: 'Type faster than your own thoughts.' },
-  'act-friends-telepathy':  { icon: '🧠', joke: 'Are you psychic? Spoiler: maybe.' },
-  'act-friends-story':      { icon: '✍️', joke: 'Collaborative chaos. Guaranteed hilarious results.' },
-  'act-friends-wink-assassin': { icon: '👁️', joke: 'Trust no one. Especially Carl.' },
-  'act-night-sky':          { icon: '🌌', joke: 'The sky is free. Just lie down and look up.' },
-  'act-night-shadow-puppets': { icon: '🐕', joke: 'Hollywood budget: $0. Entertainment value: priceless.' },
-  'act-night-ambient-sound': { icon: '🎧', joke: 'Your ears are about to go on a full vacation.' },
-  'act-comp-quick-draw':    { icon: '🤖', joke: 'Teach a robot to recognize your terrible art.' },
-  'act-comp-radio-garden':  { icon: '📻', joke: 'Morning in Tokyo. Evening in Berlin. Breakfast at your desk.' },
-  'act-comp-scale-universe': { icon: '🔭', joke: 'You are very, very small. Very.' },
-  'act-comp-sandspiel':     { icon: '⏳', joke: 'Satisfying sand physics. For grown adults. No shame.' },
-  'act-girls-nail-art':     { icon: '💅', joke: 'Roll a random nail art combo. Your nails deserve better.' },
-  'act-girls-vision-board': { icon: '🌸', joke: 'Cut + paste your dream life. Pinterest but make it chaotic.' },
-  'act-girls-journal':      { icon: '📔', joke: 'Aesthetic planning for people who never actually plan.' },
-  'act-girls-grwm':         { icon: '🪞', joke: 'Randomize your get-ready vibe. Mystery outfit energy.' },
-  'act-girls-letter':       { icon: '💌', joke: 'Write to yourself in 1 year. Future-you will cringe. Worth it.' },
-  'act-girls-quiz':         { icon: '🌟', joke: 'Which villain era are you in? (You already know.)' },
-  'act-girls-playlist':     { icon: '🎵', joke: 'Name it something dramatic. No fillers allowed.' },
-  'act-girls-handlettering': { icon: '✨', joke: 'Make your handwriting Instagram-worthy in 10 minutes.' },
+const activitySEOData: Record<string, { icon: string; joke: string; cta: string; href: string; external?: boolean }> = {
+  'act-connect4':           { icon: '🤖', joke: 'Beat the robot. If you lose, it doesn\'t count.', cta: 'Play Connect 4 vs AI free', href: '/' },
+  'act-icecream':           { icon: '🍦', joke: 'Lick pixels. Zero calories. Infinite satisfaction.', cta: 'Play Ice Cream Licking ASMR', href: '/' },
+  'act-soap-carver':        { icon: '🧼', joke: 'Adult stress toy. Do not judge.', cta: 'Play Soap Carver free', href: '/' },
+  'act-grass-cutter':       { icon: '🌿', joke: 'The grass is always greener on your screen.', cta: 'Play Lawn Mower Simulator', href: '/' },
+  'act-stealth-work':       { icon: '🕵️', joke: 'The fake spreadsheet that saved careers.', cta: 'Open Looks Busy Mode', href: '/' },
+  'act-doodle-creative':    { icon: '🎨', joke: 'Picasso also started in class. Probably.', cta: 'Open Stealthy Doodle Board', href: '/' },
+  'act-bubble-pop':         { icon: '🫧', joke: 'Therapy. Free. No appointment needed.', cta: 'Play Bubble Popper free', href: '/' },
+  'act-truth-dare':         { icon: '🔥', joke: 'Warning: friendships may not survive.', cta: 'Play Truth or Dare now', href: '/' },
+  'act-tictactoe-ai':       { icon: '❌', joke: 'The AI is unbeatable. Or is it?', cta: 'Play Tic-Tac-Toe vs AI free', href: '/' },
+  'act-class-alphabet':     { icon: '🔤', joke: 'A, B, C... actually harder than it sounds.', cta: 'Try Alphabet Challenge', href: '/' },
+  'act-class-doodle-story': { icon: '📝', joke: 'Shakespeare started somewhere. Probably a napkin.', cta: 'Try Collaborative Story', href: '/' },
+  'act-class-finger-gym':   { icon: '🖐️', joke: 'Become a hand wizard. Completely free skill.', cta: 'Try Finger Gym now', href: '/' },
+  'act-class-pen-spinning': { icon: '🖊️', joke: 'One trick away from becoming a classroom legend.', cta: 'Learn Pen Spinning free', href: '/' },
+  'act-home-wikipedia':     { icon: '🌐', joke: 'Warning: you WILL learn extremely weird facts.', cta: 'Explore random Wikipedia', href: 'https://en.wikipedia.org/wiki/Special:Random', external: true },
+  'act-home-museum':        { icon: '🏛️', joke: 'Free museum. No gift shop guilt.', cta: 'Open Google Arts & Culture', href: 'https://artsandculture.google.com/', external: true },
+  'act-home-origami':       { icon: '📐', joke: 'Instructions included. You\'ll still mess up fold 3.', cta: 'Try Origami Challenge', href: '/' },
+  'act-home-declutter':     { icon: '🧹', joke: 'Marie Kondo speedrun. 5 items. Go.', cta: 'Try 5-Item Declutter sprint', href: '/' },
+  'act-work-desk-stretch':  { icon: '🧘', joke: 'Your coworkers have absolutely no idea.', cta: 'Try Desk Yoga moves', href: '/' },
+  'act-work-email-cleanup': { icon: '📥', joke: 'Digital cleanse. Extremely satisfying.', cta: 'Try Inbox Unsubscribe sprint', href: '/' },
+  'act-work-type-racer':    { icon: '⌨️', joke: 'Type faster than your own thoughts.', cta: 'Play TypeRacer speed game', href: 'https://play.typeracer.com/', external: true },
+  'act-friends-telepathy':  { icon: '🧠', joke: 'Are you psychic? Spoiler: maybe.', cta: 'Play Telepathy Mind-Match', href: '/' },
+  'act-friends-story':      { icon: '✍️', joke: 'Collaborative chaos. Guaranteed hilarious results.', cta: 'Try Exquisite Corpse story', href: '/' },
+  'act-friends-wink-assassin': { icon: '👁️', joke: 'Trust no one. Especially Carl.', cta: 'Play Wink Assassin game', href: '/' },
+  'act-night-sky':          { icon: '🌌', joke: 'The sky is free. Just lie down and look up.', cta: 'Try Stars & Satellites watch', href: '/' },
+  'act-night-shadow-puppets': { icon: '🐕', joke: 'Hollywood budget: $0. Entertainment value: priceless.', cta: 'Try Shadow Puppets Theater', href: '/' },
+  'act-night-ambient-sound': { icon: '🎧', joke: 'Your ears are about to go on a full vacation.', cta: 'Play 3D Binaural Sound Bath', href: 'https://mynoise.net/', external: true },
+  'act-comp-quick-draw':    { icon: '🤖', joke: 'Teach a robot to recognize your terrible art.', cta: 'Play Quick Draw vs Google AI', href: 'https://quickdraw.withgoogle.com/', external: true },
+  'act-comp-radio-garden':  { icon: '📻', joke: 'Morning in Tokyo. Evening in Berlin. Breakfast at your desk.', cta: 'Explore Radio Garden live', href: 'https://radio.garden/', external: true },
+  'act-comp-scale-universe': { icon: '🔭', joke: 'You are very, very small. Very.', cta: 'Explore Scale of the Universe', href: 'https://htwins.net/scale2/', external: true },
+  'act-comp-sandspiel':     { icon: '⏳', joke: 'Satisfying sand physics. For grown adults. No shame.', cta: 'Play Sandspiel sand game', href: 'https://sandspiel.club/', external: true },
+  'act-girls-nail-art':     { icon: '💅', joke: 'Roll a random nail art combo. Your nails deserve better.', cta: 'Try Nail Art Combo Generator', href: '/' },
+  'act-girls-vision-board': { icon: '🌸', joke: 'Cut + paste your dream life. Pinterest but make it chaotic.', cta: 'Make Digital Vision Board', href: '/' },
+  'act-girls-journal':      { icon: '📔', joke: 'Aesthetic planning for people who never actually plan.', cta: 'Try Bullet Journal Layout', href: '/' },
+  'act-girls-grwm':         { icon: '🪞', joke: 'Randomize your get-ready vibe. Mystery outfit energy.', cta: 'Try GRWM Randomizer now', href: '/' },
+  'act-girls-letter':       { icon: '💌', joke: 'Write to yourself in 1 year. Future-you will cringe. Worth it.', cta: 'Write Letter to Future Me', href: 'https://www.futureme.org/', external: true },
+  'act-girls-quiz':         { icon: '🌟', joke: 'Which villain era are you in? (You already know.)', cta: 'Take Personality Quiz Marathon', href: 'https://uquiz.com/', external: true },
+  'act-girls-playlist':     { icon: '🎵', joke: 'Name it something dramatic. No fillers allowed.', cta: 'Build Mood Playlist now', href: '/' },
+  'act-girls-handlettering': { icon: '✨', joke: 'Make your handwriting Instagram-worthy in 10 minutes.', cta: 'Learn Hand Lettering free', href: '/' },
 }
 
 export default function Page() {
@@ -124,6 +124,15 @@ export default function Page() {
                         </span>
                       ))}
                     </div>
+                    {seo?.href && (
+                      <a
+                        href={seo.href}
+                        {...(seo.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                        className="mt-3 inline-flex items-center gap-1 bg-[#00FF00] border-2 border-black px-3 py-1.5 text-[9px] font-black uppercase tracking-wide text-black hover:bg-black hover:text-[#00FF00] transition-colors"
+                      >
+                        ▶ {seo.cta}
+                      </a>
+                    )}
                   </div>
                 </div>
               </article>
