@@ -793,7 +793,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">🗂️</span>
             <div className="text-left">
-              <div className="text-base font-black">Browse All 30 Activities</div>
+              <div className="text-base font-black">Browse All 38 Activities</div>
               <div className="text-[11px] font-bold opacity-70 group-hover:opacity-100 normal-case tracking-normal">
                 Fun things to do when bored — click any card to launch instantly
               </div>
@@ -840,6 +840,15 @@ export default function App() {
               { id: 'act-comp-radio-garden',  icon: '📻', joke: 'Morning in Tokyo. Evening in Berlin. Breakfast at your desk.' },
               { id: 'act-comp-scale-universe', icon: '🔭', joke: 'You are very, very small. Very.' },
               { id: 'act-comp-sandspiel',     icon: '⏳', joke: 'Satisfying sand physics. For grown adults. No shame.' },
+              // For Girls
+              { id: 'act-girls-nail-art',     icon: '💅', joke: 'Roll a random nail art combo. Your nails deserve better than boring.' },
+              { id: 'act-girls-vision-board', icon: '🌸', joke: 'Cut + paste your dream life. Pinterest but make it chaotic.' },
+              { id: 'act-girls-journal',      icon: '📔', joke: 'Aesthetic planning for people who never actually plan.' },
+              { id: 'act-girls-grwm',         icon: '🪞', joke: 'Randomize your get-ready vibe. Mystery outfit energy.' },
+              { id: 'act-girls-letter',       icon: '💌', joke: 'Write to yourself in 1 year. Future-you will cringe. Worth it.' },
+              { id: 'act-girls-quiz',         icon: '🌟', joke: 'Which villain era are you in? (You already know.)' },
+              { id: 'act-girls-playlist',     icon: '🎵', joke: 'Name it something dramatic. No fillers allowed.' },
+              { id: 'act-girls-handlettering',icon: '✨', joke: 'Make your handwriting Instagram-worthy in 10 minutes.' },
             ].map(({ id, icon, joke }) => {
               const activity = activities.find(a => a.id === id);
               if (!activity) return null;
@@ -879,7 +888,7 @@ export default function App() {
           </div>
           <div className="p-4 border-t-2 border-black text-center">
             <p className="text-[11px] font-bold text-black/50 uppercase tracking-widest">
-              30 hand-picked activities • no install • no account • 100% free
+              38 hand-picked activities • no install • no account • 100% free
             </p>
           </div>
         </div>
@@ -1005,6 +1014,57 @@ export default function App() {
               </p>
             </div>
           </div>
+
+          {/* Girls SEO cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-black/85 mt-6 pt-6 border-t-4 border-black">
+            <div className="bg-[#FFD6E7] p-5 border-2 border-black flex flex-col justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div>
+                <h2 className="font-black text-sm uppercase tracking-tight mb-2 flex items-center gap-1.5 border-b border-black/20 pb-1.5">
+                  <span>💅</span> What to Do When Bored for Girls at Home
+                </h2>
+                <p className="leading-relaxed font-medium">
+                  Stuck at home with nothing to do? Fun things for girls when bored at home include making a <strong>digital vision board</strong> on Canva, starting a bullet journal spread, randomly generating a nail art combo, or writing a letter to future-you on futureme.org. All free, no supplies required.
+                  Also try our <strong>Stealthy Doodle Board</strong> or the <strong>ASMR Soap Carver</strong> for zero-effort zen mode.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[#FFD6E7] p-5 border-2 border-black flex flex-col justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div>
+                <h2 className="font-black text-sm uppercase tracking-tight mb-2 flex items-center gap-1.5 border-b border-black/20 pb-1.5">
+                  <span>🌸</span> What to Do When Your Bored for Girls (At Night)
+                </h2>
+                <p className="leading-relaxed font-medium">
+                  Can't sleep and don't know what to do when you're bored as a girl? Night-mode ideas: take a <strong>personality quiz marathon</strong> on uquiz.com, build a <strong>mood playlist</strong> named something dramatic, do a quick hand-lettering practice session, or scroll our interactive activities with screen brightness turned all the way down.
+                  Perfect for ages 13, 14, 15, 16, 17 and beyond.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Girls FAQ */}
+          <div className="mt-6 pt-6 border-t-4 border-black space-y-4 text-xs text-black/85">
+            <h3 className="font-black text-sm uppercase tracking-tight text-black">🎀 FAQ — What to Do When Bored for Girls</h3>
+            <details className="bg-[#F4F4F1] border-2 border-black p-4">
+              <summary className="font-black uppercase text-xs cursor-pointer select-none">What can a girl do when bored at home alone?</summary>
+              <p className="mt-3 leading-relaxed font-medium">
+                Great solo activities for girls at home: generate a random nail art combo and actually do it, start a bullet journal (any notebook works), build a vision board on Canva, take an unhinged personality quiz on uquiz.com, write a letter to your future self, or practice hand lettering with just a pen and paper.
+                If you have your phone or computer: try our <strong>ASMR Ice Cream</strong> game, the <strong>Doodle Board</strong>, or build a mood playlist for your current era.
+              </p>
+            </details>
+            <details className="bg-[#F4F4F1] border-2 border-black p-4">
+              <summary className="font-black uppercase text-xs cursor-pointer select-none">What to do when your bored for girls at night?</summary>
+              <p className="mt-3 leading-relaxed font-medium">
+                Night boredom hits different. Best ideas for girls at night: dim your screen and play the <strong>3D Binaural Sound Bath</strong>, do a GRWM aesthetic randomizer (even if you're going nowhere), write in your journal, or take 3 personality quizzes back-to-back and text the results to your friend. If you can't sleep: our <strong>Bubble Popper</strong> and <strong>Scale of the Universe</strong> are perfect 3AM activities.
+              </p>
+            </details>
+            <details className="bg-[#F4F4F1] border-2 border-black p-4">
+              <summary className="font-black uppercase text-xs cursor-pointer select-none">What to do when bored for teenage girls?</summary>
+              <p className="mt-3 leading-relaxed font-medium">
+                Teenage girl boredom cures: start a digital vision board for your goals (actually useful), practice hand lettering (looks impressive, takes 10 min to learn), challenge a friend to a <strong>Telepathy Mind-Match</strong> or <strong>Truth or Dare</strong>, build the perfect breakup/hype-up playlist, or write yourself a letter to open in exactly one year. Also: our <strong>Connect 4 vs AI</strong> is secretly addictive.
+              </p>
+            </details>
+          </div>
+
         </div>
       </div>
 

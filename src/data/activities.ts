@@ -496,6 +496,147 @@ export const activities: Activity[] = [
       'Draw on the screen to watch gravity pull particles down.',
       'Add acid or water to dissolve or extinguish materials.'
     ]
+  },
+
+  // ── FOR GIRLS ─────────────────────────────────────────────────────────────
+  {
+    id: 'act-girls-nail-art',
+    title: '💅 Random Nail Art Combo Generator',
+    description: 'Get an instant random nail art idea: color palette, pattern, and accent finger combo. Scroll through combinations until you find the one. Then actually do it (or just screenshot it).',
+    contexts: ['home', 'night', 'friends'],
+    durations: ['30s', '5m'],
+    moods: ['funny', 'chill', 'social'],
+    devices: ['phone', 'computer'],
+    risk: 'safe',
+    tags: ['girls'],
+    steps: [
+      'Hit "Generate" to get a random base color + pattern + accent nail combo.',
+      'Keep re-rolling until something looks actually cute.',
+      'Screenshot your fave combo and try it on your nails.'
+    ],
+    externalLink: 'https://www.nailartgallery.com/'
+  },
+  {
+    id: 'act-girls-vision-board',
+    title: '🌸 5-Min Digital Vision Board',
+    description: 'Open a blank Google Slides (or Canva free) and paste images of everything you want: travel, aesthetic rooms, career dreams, snacks. Chaotic Pinterest energy. No rules.',
+    contexts: ['home', 'night', 'computer', 'school'],
+    durations: ['15m', '1h'],
+    moods: ['productive', 'chill'],
+    devices: ['computer', 'phone'],
+    risk: 'safe',
+    tags: ['girls'],
+    steps: [
+      'Open Google Slides or Canva (free, no login needed).',
+      'Search Google Images for anything that makes you feel something.',
+      'Paste, resize, and arrange until it looks like your dream life.',
+      'Save as wallpaper or print it out.'
+    ]
+  },
+  {
+    id: 'act-girls-journal',
+    title: '📔 Bullet Journal Speed Layout',
+    description: 'Set up a minimal weekly or mood tracker layout in under 5 minutes. No fancy supplies needed — a pen and any notebook work. Aesthetic by nature, functional by accident.',
+    contexts: ['home', 'night', 'school', 'class'],
+    durations: ['5m', '15m'],
+    moods: ['productive', 'chill'],
+    devices: ['paper', 'offline'],
+    risk: 'safe',
+    tags: ['girls'],
+    steps: [
+      'Open any notebook to a blank page.',
+      'Draw a simple weekly grid (7 boxes, label with days).',
+      'Add one mood tracker: a row of tiny circles, one per day.',
+      'Decorate the border with whatever doodles feel right. Done.'
+    ]
+  },
+  {
+    id: 'act-girls-grwm',
+    title: '🪞 GRWM Routine Randomizer',
+    description: 'Can\'t decide what to wear or how to do your makeup? Spin a random vibe: "clean girl", "dark academia", "Y2K", "cottagecore", "no-makeup makeup". Then commit.',
+    contexts: ['home', 'night', 'friends'],
+    durations: ['5m', '15m'],
+    moods: ['funny', 'chill', 'social'],
+    devices: ['phone', 'computer'],
+    risk: 'safe',
+    tags: ['girls'],
+    steps: [
+      'Pick a random aesthetic from the list (or close your eyes and point).',
+      'Look it up on Pinterest for 2 minutes.',
+      'Get dressed/ready in that style — even if you\'re not going anywhere.',
+      'Take a mirror selfie. You earned it.'
+    ],
+    externalLink: 'https://www.pinterest.com/search/pins/?q=aesthetic+outfits'
+  },
+  {
+    id: 'act-girls-letter',
+    title: '💌 Letter to Future Me (1 Year)',
+    description: 'Write an honest, unfiltered letter to yourself one year from now. What do you want? What\'s stressing you out? What do you hope changes? Seal it (digitally or on paper) and set a reminder.',
+    contexts: ['home', 'night', 'school'],
+    durations: ['15m', '1h'],
+    moods: ['chill', 'productive'],
+    devices: ['computer', 'phone', 'paper', 'offline'],
+    risk: 'safe',
+    tags: ['girls'],
+    steps: [
+      'Open futureme.org (free, anonymous) or grab a pen and paper.',
+      'Write freely: your current mood, goals, fears, people in your life.',
+      'Set a delivery date exactly 1 year from now.',
+      'Forget about it. Future-you will be shocked at how much changes.'
+    ],
+    externalLink: 'https://www.futureme.org/'
+  },
+  {
+    id: 'act-girls-quiz',
+    title: '🌟 Unhinged Personality Quiz Marathon',
+    description: 'Which villain era are you in? What pasta shape matches your energy? Which decade were you born in the wrong century for? Take 3 chaotic quizzes back-to-back and compare results with a friend.',
+    contexts: ['home', 'night', 'friends', 'school'],
+    durations: ['5m', '15m'],
+    moods: ['funny', 'social', 'chill'],
+    devices: ['phone', 'computer'],
+    risk: 'safe',
+    tags: ['girls'],
+    steps: [
+      'Go to uquiz.com or buzzfeed.com/quizzes.',
+      'Pick the most unhinged quiz title you see.',
+      'Answer honestly (or chaotically — your call).',
+      'Send the result to your group chat with zero context.'
+    ],
+    externalLink: 'https://uquiz.com/'
+  },
+  {
+    id: 'act-girls-playlist',
+    title: '🎵 Mood Playlist in 10 Minutes',
+    description: 'Build the perfect playlist for your current vibe: main character moment, villain arc, soft launch, or full spiral. No skips allowed — only songs that actually hit.',
+    contexts: ['home', 'night', 'friends', 'school'],
+    durations: ['15m', '1h'],
+    moods: ['chill', 'productive', 'social'],
+    devices: ['phone', 'computer'],
+    risk: 'safe',
+    tags: ['girls'],
+    steps: [
+      'Name your playlist something dramatic (very important).',
+      'Add 10 songs that match the current energy — no fillers.',
+      'Include at least one guilty pleasure and one throwback.',
+      'Share it or keep it secret. Both are valid.'
+    ]
+  },
+  {
+    id: 'act-girls-handlettering',
+    title: '✨ Hand Lettering in 10 Minutes',
+    description: 'Learn one hand lettering technique that makes your handwriting look like an aesthetic quote poster. All you need: a pen, a piece of paper, and 10 minutes of patience.',
+    contexts: ['home', 'night', 'school', 'class'],
+    durations: ['5m', '15m'],
+    moods: ['chill', 'productive'],
+    devices: ['paper', 'offline'],
+    risk: 'safe',
+    tags: ['girls'],
+    steps: [
+      'Pick one word to practice (your name, "vibes", whatever).',
+      'Write it in cursive, then thicken all downstrokes.',
+      'Add a drop shadow 2px to the right and bottom.',
+      'Try a second word — it already looks better. Keep going.'
+    ]
   }
 ];
 

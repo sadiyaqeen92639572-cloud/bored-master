@@ -11,6 +11,7 @@ export interface Activity {
   steps?: string[];
   externalLink?: string;
   author?: string;
+  tags?: string[];
 }
 
 export interface Badge {
