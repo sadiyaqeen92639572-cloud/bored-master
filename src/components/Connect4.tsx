@@ -21,7 +21,7 @@ export function Connect4({ onGameFinished }: Connect4Props) {
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [winner, setWinner] = useState<string | null>(null);
   const [winningCells, setWinningCells] = useState<[number, number][]>([]);
-  const [hoverCol, setHoverCol] = useState<number | null>(null);
+  const [hoverCell, setHoverCell] = useState<{ r: number; c: number } | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [username, setUsernameState] = useState(getStoredUsername());
   const [tempName, setTempName] = useState(getStoredUsername());
@@ -34,7 +34,7 @@ export function Connect4({ onGameFinished }: Connect4Props) {
   const boardRef = useRef(board);
   boardRef.current = board;
 
-  // Responsive canvas sizing — also fires when gameStarted changes (wrapperRef becomes visible)
+  // Responsive canvas sizing — fires on mount and when game starts (wrapperRef becomes visible)
   useEffect(() => {
     const resize = () => {
       if (!wrapperRef.current) return;
@@ -50,7 +50,7 @@ export function Connect4({ onGameFinished }: Connect4Props) {
   // ── Draw ────────────────────────────────────────────────────────────────────
   const draw = useCallback((
     b: Cell[][],
-    hover: number | null,
+    hover: { r: number; c: number } | null,
     win: string | null,
     wCells: [number, number][],
     playerTurn: boolean,
@@ -64,7 +64,7 @@ export function Connect4({ onGameFinished }: Connect4Props) {
 
     const pad = 12;
     const cell = Math.floor((cw - pad * 2) / COLS);
-    const r = cell * 0.38; // circle radius
+    const r = cell * 0.38;
 
     // Board background
     ctx.fillStyle = '#1D4ED8';
@@ -75,18 +75,6 @@ export function Connect4({ onGameFinished }: Connect4Props) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Hover drop indicator
-    if (hover !== null && !win && playerTurn) {
-      const hx = pad + hover * cell + cell / 2;
-      ctx.beginPath();
-      ctx.arc(hx, pad / 2, r * 0.7, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,107,107,0.75)';
-      ctx.fill();
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
     // Cells
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
@@ -94,6 +82,9 @@ export function Connect4({ onGameFinished }: Connect4Props) {
         const cy = pad + row * cell + cell / 2 + pad;
 
         const isWin = wCells.some(([wr, wc]) => wr === row && wc === col);
+        const isHover = hover?.r === row && hover?.c === col;
+        const cellVal = b[row][col];
+        const isEmpty = cellVal === null;
 
         // Shadow
         ctx.beginPath();
@@ -104,24 +95,23 @@ export function Connect4({ onGameFinished }: Connect4Props) {
         // Main circle
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        const cell_val = b[row][col];
-        if (cell_val === 'Player') {
+        if (cellVal === 'Player') {
           ctx.fillStyle = isWin ? '#FF2222' : '#FF6B6B';
-        } else if (cell_val === 'AI') {
+        } else if (cellVal === 'AI') {
           ctx.fillStyle = isWin ? '#FFB800' : '#FFD93D';
+        } else if (isHover && playerTurn && !win) {
+          // Preview player piece on hover
+          ctx.fillStyle = 'rgba(255,107,107,0.55)';
         } else {
-          // Hover column empty cell preview
-          ctx.fillStyle = hover === col && playerTurn && !win
-            ? 'rgba(255,200,200,0.4)'
-            : '#E8EAF0';
+          ctx.fillStyle = '#E8EAF0';
         }
         ctx.fill();
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = isHover && isEmpty && playerTurn && !win ? '#FF6B6B' : '#000';
+        ctx.lineWidth = isHover && isEmpty && playerTurn && !win ? 3 : 2;
         ctx.stroke();
 
         // Shine on filled coins
-        if (cell_val) {
+        if (cellVal) {
           ctx.beginPath();
           ctx.arc(cx - r * 0.28, cy - r * 0.28, r * 0.3, 0, Math.PI * 2);
           ctx.fillStyle = 'rgba(255,255,255,0.35)';
@@ -136,13 +126,21 @@ export function Connect4({ onGameFinished }: Connect4Props) {
           ctx.lineWidth = 4;
           ctx.stroke();
         }
+
+        // Hover cursor dot on empty cell
+        if (isHover && isEmpty && playerTurn && !win) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, r * 0.25, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,107,107,0.9)';
+          ctx.fill();
+        }
       }
     }
   }, []);
 
   useEffect(() => {
-    draw(board, hoverCol, winner, winningCells, isPlayerTurn, canvasSize.w, canvasSize.h);
-  }, [board, hoverCol, winner, winningCells, isPlayerTurn, canvasSize, draw]);
+    draw(board, hoverCell, winner, winningCells, isPlayerTurn, canvasSize.w, canvasSize.h);
+  }, [board, hoverCell, winner, winningCells, isPlayerTurn, canvasSize, draw]);
 
   // Timer
   useEffect(() => {
@@ -155,13 +153,6 @@ export function Connect4({ onGameFinished }: Connect4Props) {
   }, [gameStarted, winner]);
 
   // ── Game logic ───────────────────────────────────────────────────────────────
-  const getLowestEmpty = (col: number, b: Cell[][]) => {
-    for (let row = ROWS - 1; row >= 0; row--) {
-      if (b[row][col] === null) return row;
-    }
-    return -1;
-  };
-
   const checkWin = (b: Cell[][]) => {
     const check4 = (cells: [number, number][]) => {
       const vals = cells.map(([r, c]) => b[r]?.[c]);
@@ -182,7 +173,36 @@ export function Connect4({ onGameFinished }: Connect4Props) {
     return null;
   };
 
-  const handleGameOver = useCallback((winType: string, cells: [number, number][], finalBoard: Cell[][]) => {
+  // Score a cell for AI (higher = better for `player`)
+  const scoreCell = (b: Cell[][], row: number, col: number, player: Cell): number => {
+    const opp = player === 'AI' ? 'Player' : 'AI';
+    const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+    let score = 0;
+    for (const [dr, dc] of dirs) {
+      let mine = 1, empties = 0;
+      for (let i = 1; i < 4; i++) {
+        const nr = row + dr*i, nc = col + dc*i;
+        if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) break;
+        if (b[nr][nc] === player) mine++;
+        else if (b[nr][nc] === null) { empties++; break; }
+        else break;
+      }
+      for (let i = 1; i < 4; i++) {
+        const nr = row - dr*i, nc = col - dc*i;
+        if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) break;
+        if (b[nr][nc] === player) mine++;
+        else if (b[nr][nc] === null) { empties++; break; }
+        else break;
+      }
+      if (mine + empties >= 4) score += mine * mine * mine;
+    }
+    // Center bonus
+    score += (3 - Math.abs(row - 2.5)) * 2;
+    score += (3 - Math.abs(col - 3)) * 2;
+    return score;
+  };
+
+  const handleGameOver = useCallback((winType: string, cells: [number, number][]) => {
     setWinner(winType);
     setWinningCells(cells);
     const duration = startTimeRef.current ? Math.floor((Date.now() - startTimeRef.current) / 1000) : 10;
@@ -202,11 +222,11 @@ export function Connect4({ onGameFinished }: Connect4Props) {
     setTimeout(() => onGameFinished(score, duration, text), 1200);
   }, [username, onGameFinished]);
 
-  const makeMove = useCallback((col: number) => {
+  // Direct cell placement — no gravity
+  const makeMove = useCallback((row: number, col: number) => {
     if (!isPlayerTurn || winner) return;
     const b = boardRef.current;
-    const row = getLowestEmpty(col, b);
-    if (row === -1) return;
+    if (b[row][col] !== null) return; // already occupied
 
     const next = b.map(r => [...r]) as Cell[][];
     next[row][col] = 'Player';
@@ -215,37 +235,40 @@ export function Connect4({ onGameFinished }: Connect4Props) {
 
     const res = checkWin(next);
     if (res) {
-      handleGameOver(res.winner as string, res.cells, next);
+      handleGameOver(res.winner as string, res.cells);
     } else {
       setIsPlayerTurn(false);
-      setTimeout(() => makeAIMove(next), 500);
+      setTimeout(() => makeAIMove(next), 400);
     }
   }, [isPlayerTurn, winner, handleGameOver]);
 
   const makeAIMove = useCallback((b: Cell[][]) => {
-    // 1. Win if possible
-    for (let c = 0; c < COLS; c++) {
-      const row = getLowestEmpty(c, b);
-      if (row !== -1) {
-        const t = b.map(r => [...r]) as Cell[][];
-        t[row][c] = 'AI';
-        if (checkWin(t)?.winner === 'AI') { commitAI(row, c, b); return; }
-      }
+    const emptyCells: [number, number][] = [];
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++)
+        if (b[r][c] === null) emptyCells.push([r, c]);
+
+    if (emptyCells.length === 0) return;
+
+    // 1. Win immediately
+    for (const [r, c] of emptyCells) {
+      const t = b.map(row => [...row]) as Cell[][];
+      t[r][c] = 'AI';
+      if (checkWin(t)?.winner === 'AI') { commitAI(r, c, b); return; }
     }
-    // 2. Block player
-    for (let c = 0; c < COLS; c++) {
-      const row = getLowestEmpty(c, b);
-      if (row !== -1) {
-        const t = b.map(r => [...r]) as Cell[][];
-        t[row][c] = 'Player';
-        if (checkWin(t)?.winner === 'Player') { commitAI(row, c, b); return; }
-      }
+    // 2. Block player's winning move
+    for (const [r, c] of emptyCells) {
+      const t = b.map(row => [...row]) as Cell[][];
+      t[r][c] = 'Player';
+      if (checkWin(t)?.winner === 'Player') { commitAI(r, c, b); return; }
     }
-    // 3. Center preference
-    for (const c of [3,2,4,1,5,0,6]) {
-      const row = getLowestEmpty(c, b);
-      if (row !== -1) { commitAI(row, c, b); return; }
+    // 3. Score all empty cells — pick best
+    let best = -Infinity, bestR = -1, bestC = -1;
+    for (const [r, c] of emptyCells) {
+      const s = scoreCell(b, r, c, 'AI') + scoreCell(b, r, c, 'Player') * 0.8;
+      if (s > best) { best = s; bestR = r; bestC = c; }
     }
+    commitAI(bestR, bestC, b);
   }, [handleGameOver]);
 
   const commitAI = useCallback((row: number, col: number, b: Cell[][]) => {
@@ -253,42 +276,46 @@ export function Connect4({ onGameFinished }: Connect4Props) {
     next[row][col] = 'AI';
     setBoard(next);
     const res = checkWin(next);
-    if (res) handleGameOver(res.winner as string, res.cells, next);
+    if (res) handleGameOver(res.winner as string, res.cells);
     else setIsPlayerTurn(true);
   }, [handleGameOver]);
 
-  // ── Canvas interaction (pixel-perfect column detection) ───────────────────
-  const getColFromEvent = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  // ── Canvas interaction — pixel-perfect cell detection ────────────────────
+  const getCellFromEvent = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return -1;
+    if (!canvas) return { r: -1, c: -1 };
     const rect = canvas.getBoundingClientRect();
-    // Use rect.width directly — avoids stale canvasSize state and works regardless of DPR/scaling
-    let clientX: number;
-    if ('touches' in e) clientX = e.touches[0].clientX;
-    else clientX = (e as React.MouseEvent).clientX;
-    const x = clientX - rect.left; // position in CSS pixels within the canvas element
-    const pad = 12 * (rect.width / canvas.width); // scale pad to CSS pixels
-    const colW = (rect.width - pad * 2) / COLS;
-    const col = Math.floor((x - pad) / colW);
-    return col >= 0 && col < COLS ? col : -1;
+    let clientX: number, clientY: number;
+    if ('touches' in e) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+    else { clientX = (e as React.MouseEvent).clientX; clientY = (e as React.MouseEvent).clientY; }
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    // pad scales proportionally to CSS pixels
+    const padCss = 12 * (rect.width / canvas.width);
+    const cellW = (rect.width - padCss * 2) / COLS;
+    // cells are square — same size in both directions
+    const c = Math.floor((x - padCss) / cellW);
+    const r = Math.floor((y - padCss * 2) / cellW); // board starts at 2*pad from top
+    if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return { r: -1, c: -1 };
+    return { r, c };
   };
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!gameStarted || !isPlayerTurn || winner) return;
-    const col = getColFromEvent(e);
-    if (col >= 0) makeMove(col);
+    const { r, c } = getCellFromEvent(e);
+    if (r >= 0 && c >= 0) makeMove(r, c);
   };
 
   const handleCanvasMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const col = getColFromEvent(e);
-    setHoverCol(col >= 0 ? col : null);
+    const { r, c } = getCellFromEvent(e);
+    setHoverCell(r >= 0 && c >= 0 ? { r, c } : null);
   };
 
   const handleCanvasTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     if (!gameStarted || !isPlayerTurn || winner) return;
-    const col = getColFromEvent(e);
-    if (col >= 0) makeMove(col);
+    const { r, c } = getCellFromEvent(e);
+    if (r >= 0 && c >= 0) makeMove(r, c);
   };
 
   // ── Start / Restart ──────────────────────────────────────────────────────
@@ -299,7 +326,7 @@ export function Connect4({ onGameFinished }: Connect4Props) {
     setIsPlayerTurn(true);
     setWinner(null);
     setWinningCells([]);
-    setHoverCol(null);
+    setHoverCell(null);
     setElapsedTime(0);
     setPlayerMoves(0);
     startTimeRef.current = Date.now();
@@ -311,7 +338,7 @@ export function Connect4({ onGameFinished }: Connect4Props) {
     setIsPlayerTurn(true);
     setWinner(null);
     setWinningCells([]);
-    setHoverCol(null);
+    setHoverCell(null);
     setElapsedTime(0);
     setPlayerMoves(0);
     startTimeRef.current = Date.now();
@@ -356,14 +383,18 @@ export function Connect4({ onGameFinished }: Connect4Props) {
               ref={canvasRef}
               width={canvasSize.w}
               height={canvasSize.h}
-              style={{ width: '100%', cursor: winner || !isPlayerTurn ? 'default' : 'pointer', display: 'block', borderRadius: 8, border: '3px solid black' }}
+              style={{ width: '100%', cursor: winner || !isPlayerTurn ? 'default' : 'crosshair', display: 'block', borderRadius: 8, border: '3px solid black' }}
               onClick={handleCanvasClick}
               onMouseMove={handleCanvasMove}
-              onMouseLeave={() => setHoverCol(null)}
+              onMouseLeave={() => setHoverCell(null)}
               onTouchStart={handleCanvasTouch}
             />
             <p className="text-center text-[10px] font-bold text-black/50 uppercase tracking-widest mt-1">
-              {winner ? (winner === 'Player' ? '🎉 You won!' : winner === 'AI' ? '🤖 AI wins!' : '🤝 Draw!') : isPlayerTurn ? 'Click any column ↑' : 'AI thinking…'}
+              {winner
+                ? (winner === 'Player' ? '🎉 You won!' : winner === 'AI' ? '🤖 AI wins!' : '🤝 Draw!')
+                : isPlayerTurn
+                  ? 'Click any empty cell to place your piece'
+                  : 'AI thinking…'}
             </p>
           </div>
 
@@ -380,31 +411,31 @@ export function Connect4({ onGameFinished }: Connect4Props) {
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded-full bg-[#FFD93D] border border-black inline-block shrink-0" />
-                <span>AI: <b>BoredBot</b></span>
+                <span>AI: <b>BoredBot v1.2</b></span>
               </div>
-              <div className="border-t border-black/20 pt-1.5 font-mono text-[10px] space-y-0.5">
-                <div>Moves: <b>{playerMoves}</b></div>
-                <div>Status: <b className="text-blue-700">{winner ? 'Game Over' : isPlayerTurn ? 'Your turn' : 'AI...'}</b></div>
+              <div className="flex justify-between pt-1 border-t border-black/10 text-[10px]">
+                <span>Moves made:</span>
+                <span className="font-black">{playerMoves}</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span>Status:</span>
+                <span className={`font-black ${winner ? 'text-[#FF6B6B]' : isPlayerTurn ? 'text-green-600' : 'text-yellow-600'}`}>
+                  {winner ? (winner === 'Draw' ? 'DRAW' : winner.toUpperCase() + ' WINS') : isPlayerTurn ? 'YOUR TURN' : 'AI TURN'}
+                </span>
               </div>
             </div>
 
-            {winner && (
-              <div className="bg-[#FFD93D] border-2 border-black p-2 text-center text-[11px] font-black uppercase">
-                {winner === 'Player' ? '🎉 You won!' : winner === 'AI' ? '🤖 AI wins!' : '🤝 Draw!'}
-              </div>
-            )}
+            <div className="bg-[#F4F4F4] border-2 border-black p-3 text-[10px] text-black/60 leading-relaxed">
+              <b className="text-black block mb-1">Free placement mode</b>
+              Click any empty cell — no gravity. Align 4 coins horizontally, vertically, or diagonally!
+            </div>
 
             <button
               onClick={handleRestart}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 border-2 border-black bg-white hover:bg-black hover:text-white font-black uppercase transition-all text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
+              className="flex items-center justify-center gap-1.5 bg-white border-2 border-black px-3 py-2 text-[10px] font-black uppercase hover:bg-[#FFD93D] transition-colors cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              Restart
+              <RefreshCw className="w-3 h-3" /> Restart
             </button>
-
-            <p className="text-[10px] text-black/40 text-center font-medium italic">
-              Align 4 coins to win
-            </p>
           </div>
         </div>
       )}
