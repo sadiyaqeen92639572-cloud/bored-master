@@ -109,84 +109,126 @@ export function IceCreamLicking({ onGameFinished }: IceCreamLickingProps) {
     if (!ctx) return;
     const w = canvas.width;
     const h = canvas.height;
-    const { cx, s1y, s2y, coneTop, coneTip } = geo(w);
+    const { cx, baseR, s1y, s2y, coneTop, coneTip } = geo(w);
     const r1 = scoop1R.current;
     const r2 = scoop2R.current;
+    // cone always uses initial baseR — never shrinks
+    const coneW = baseR * 1.15;
 
     // Sky bg
     const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, '#E0F4FF');
-    grad.addColorStop(1, '#FFF5E0');
+    grad.addColorStop(0, '#FFF0F5');
+    grad.addColorStop(1, '#FFF9E0');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
-    // Cone
-    ctx.beginPath();
-    ctx.moveTo(cx - r2 * 1.05, coneTop);
-    ctx.lineTo(coneTip.x, coneTip.y);
-    ctx.lineTo(cx + r2 * 1.05, coneTop);
-    ctx.closePath();
-    ctx.fillStyle = CONE_COLOR;
-    ctx.fill();
-    ctx.strokeStyle = '#5C3D11';
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
+    // ── Draw scoops FIRST so cone covers the bottom overlap ───────────────
 
-    // Waffle lines
-    ctx.strokeStyle = '#A0673A';
-    ctx.lineWidth = 1;
-    for (let i = 1; i < 4; i++) {
-      const t = i / 4;
-      const lx1 = cx - r2 * 1.05 * (1 - t) - coneTip.x * t + coneTip.x;
-      const lx2 = cx + r2 * 1.05 * (1 - t) + coneTip.x * t - coneTip.x;
-      const ly = coneTop + (coneTip.y - coneTop) * t;
-      ctx.beginPath(); ctx.moveTo(lx1 - w*0.01, ly); ctx.lineTo(lx2 + w*0.01, ly); ctx.stroke();
-    }
-
-    // Bottom scoop
+    // Bottom scoop (blue)
     if (r2 > 2) {
-      const g2 = ctx.createRadialGradient(cx - r2*0.25, s2y - r2*0.3, r2*0.1, cx, s2y, r2);
-      g2.addColorStop(0, '#A8E8FF');
-      g2.addColorStop(1, SCOOP2_COLOR);
+      const g2 = ctx.createRadialGradient(cx - r2*0.3, s2y - r2*0.35, r2*0.05, cx, s2y, r2);
+      g2.addColorStop(0, '#C5EEFF');
+      g2.addColorStop(0.6, SCOOP2_COLOR);
+      g2.addColorStop(1, '#2D88A8');
       ctx.beginPath();
       ctx.arc(cx, s2y, r2, 0, Math.PI * 2);
       ctx.fillStyle = g2;
       ctx.fill();
       ctx.strokeStyle = '#1A5F7A';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2;
       ctx.stroke();
+      // shine highlight
+      ctx.beginPath();
+      ctx.arc(cx - r2*0.3, s2y - r2*0.35, r2*0.18, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.fill();
     }
 
-    // Top scoop
+    // Top scoop (pink)
     if (r1 > 2) {
-      const g1 = ctx.createRadialGradient(cx - r1*0.25, s1y - r1*0.3, r1*0.1, cx, s1y, r1);
-      g1.addColorStop(0, '#FFAACF');
-      g1.addColorStop(1, SCOOP1_COLOR);
+      const g1 = ctx.createRadialGradient(cx - r1*0.3, s1y - r1*0.35, r1*0.05, cx, s1y, r1);
+      g1.addColorStop(0, '#FFCCE0');
+      g1.addColorStop(0.6, SCOOP1_COLOR);
+      g1.addColorStop(1, '#C2185B');
       ctx.beginPath();
       ctx.arc(cx, s1y, r1, 0, Math.PI * 2);
       ctx.fillStyle = g1;
       ctx.fill();
       ctx.strokeStyle = '#8B2252';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2;
       ctx.stroke();
+      // shine highlight
+      ctx.beginPath();
+      ctx.arc(cx - r1*0.3, s1y - r1*0.35, r1*0.18, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.fill();
     }
 
     // Sprinkles on top scoop
     if (r1 > 10) {
-      const sprinkleColors = ['#FF6B6B','#FFD93D','#00FF00','#00BFFF','#FF69B4'];
-      for (let i = 0; i < 12; i++) {
-        const angle = (i / 12) * Math.PI * 2;
-        const dist = r1 * (0.35 + (i % 3) * 0.2);
+      const sprinkleColors = ['#FF6B6B','#FFD93D','#00CC44','#00BFFF','#FF69B4'];
+      for (let i = 0; i < 14; i++) {
+        const angle = (i / 14) * Math.PI * 2;
+        const dist = r1 * (0.3 + (i % 3) * 0.18);
         const sx = cx + Math.cos(angle) * dist;
-        const sy = s1y + Math.sin(angle) * dist * 0.6;
-        ctx.save();
-        ctx.translate(sx, sy);
-        ctx.rotate(angle + Math.PI / 4);
-        ctx.fillStyle = sprinkleColors[i % sprinkleColors.length];
-        ctx.fillRect(-w*0.012, -w*0.004, w*0.024, w*0.008);
-        ctx.restore();
+        const sy = s1y + Math.sin(angle) * dist * 0.7;
+        // only draw if inside the scoop
+        if (Math.hypot(sx - cx, sy - s1y) < r1 * 0.9) {
+          ctx.save();
+          ctx.translate(sx, sy);
+          ctx.rotate(angle + 0.5);
+          ctx.fillStyle = sprinkleColors[i % sprinkleColors.length];
+          ctx.beginPath();
+          ctx.roundRect(-w*0.013, -w*0.004, w*0.026, w*0.008, 3);
+          ctx.fill();
+          ctx.restore();
+        }
       }
     }
+
+    // ── Cone drawn ON TOP of scoops to cover the bottom overlap ───────────
+    ctx.beginPath();
+    ctx.moveTo(cx - coneW, coneTop);
+    ctx.lineTo(coneTip.x, coneTip.y);
+    ctx.lineTo(cx + coneW, coneTop);
+    ctx.closePath();
+    // cone gradient: light top → darker bottom
+    const coneGrad = ctx.createLinearGradient(cx - coneW, coneTop, cx + coneW, coneTip.y);
+    coneGrad.addColorStop(0, '#E8A870');
+    coneGrad.addColorStop(0.5, CONE_COLOR);
+    coneGrad.addColorStop(1, '#7A4A20');
+    ctx.fillStyle = coneGrad;
+    ctx.fill();
+    ctx.strokeStyle = '#5C3D11';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Waffle grid on cone
+    ctx.save();
+    ctx.clip(); // clip waffle lines inside cone triangle
+    ctx.beginPath();
+    ctx.moveTo(cx - coneW, coneTop);
+    ctx.lineTo(coneTip.x, coneTip.y);
+    ctx.lineTo(cx + coneW, coneTop);
+    ctx.closePath();
+    ctx.clip();
+    ctx.strokeStyle = '#A06030';
+    ctx.lineWidth = 1;
+    const coneH = coneTip.y - coneTop;
+    for (let i = 1; i < 5; i++) {
+      const t = i / 5;
+      const ly = coneTop + coneH * t;
+      const hw = coneW * (1 - t) + 2;
+      ctx.beginPath(); ctx.moveTo(cx - hw, ly); ctx.lineTo(cx + hw, ly); ctx.stroke();
+    }
+    // diagonal lines
+    for (let i = -3; i <= 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(cx + i * coneW * 0.5, coneTop);
+      ctx.lineTo(coneTip.x, coneTip.y);
+      ctx.stroke();
+    }
+    ctx.restore();
 
     // Drips
     dripsRef.current.forEach(drip => {
