@@ -31,12 +31,12 @@ const jsonLd = {
       ],
     },
 
-    // ── ItemList — all 38 activities (Google carousel potential) ─────────────
+    // ── ItemList — all 43 activities (Google carousel potential) ─────────────
     {
       '@type': 'ItemList',
-      name: '38 Fun Things To Do When Bored',
+      name: '43 Fun Things To Do When Bored',
       description: 'Hand-picked anti-boredom activities and free browser games. No install, no account.',
-      numberOfItems: 38,
+      numberOfItems: 43,
       itemListElement: [
         { '@type': 'ListItem', position: 1,  name: 'Connect 4 Strategy vs AI',           url: `${SITE_URL}/?activity=act-connect4` },
         { '@type': 'ListItem', position: 2,  name: 'Satisfying Ice Cream Licking ASMR',  url: `${SITE_URL}/?activity=act-icecream` },
@@ -76,6 +76,11 @@ const jsonLd = {
         { '@type': 'ListItem', position: 36, name: 'Unhinged Personality Quiz Marathon',   url: 'https://uquiz.com/' },
         { '@type': 'ListItem', position: 37, name: 'Mood Playlist in 10 Minutes',          url: `${SITE_URL}/?activity=act-girls-playlist` },
         { '@type': 'ListItem', position: 38, name: 'Hand Lettering in 10 Minutes',         url: `${SITE_URL}/?activity=act-girls-handlettering` },
+        { '@type': 'ListItem', position: 39, name: 'Shake to Decide — Yes/No Phone Game',   url: `${SITE_URL}/?activity=act-shake-decide` },
+        { '@type': 'ListItem', position: 40, name: 'Tap Speed Test',                        url: `${SITE_URL}/?activity=act-tap-speed` },
+        { '@type': 'ListItem', position: 41, name: 'Phone Tilt Maze',                       url: `${SITE_URL}/?activity=act-tilt-maze` },
+        { '@type': 'ListItem', position: 42, name: 'One-Thumb Drawing Canvas',              url: `${SITE_URL}/?activity=act-thumb-draw` },
+        { '@type': 'ListItem', position: 43, name: 'Swipe Reaction Game',                   url: `${SITE_URL}/?activity=act-swipe-reaction` },
       ],
     },
 
@@ -263,6 +268,11 @@ const activitySEOData: Record<string, { icon: string; joke: string; cta: string;
   'act-girls-quiz':         { icon: '🌟', joke: 'Which villain era are you in? (You already know.)', cta: 'Take Personality Quiz Marathon', href: 'https://uquiz.com/', external: true },
   'act-girls-playlist':     { icon: '🎵', joke: 'Name it something dramatic. No fillers allowed.', cta: 'Build Mood Playlist now', href: '/?activity=act-girls-playlist' },
   'act-girls-handlettering': { icon: '✨', joke: 'Make your handwriting Instagram-worthy in 10 minutes.', cta: 'Learn Hand Lettering free', href: '/?activity=act-girls-handlettering' },
+  'act-shake-decide':        { icon: '📳', joke: 'Can\'t decide? Let physics do it. Final answer.', cta: 'Play Shake to Decide', href: '/?activity=act-shake-decide' },
+  'act-tap-speed':           { icon: '⚡', joke: 'Your thumbs are either elite or embarrassing. Find out.', cta: 'Play Tap Speed Test', href: '/?activity=act-tap-speed' },
+  'act-tilt-maze':           { icon: '🕹️', joke: 'Tilt your phone. Don\'t drop it. Good luck.', cta: 'Play Phone Tilt Maze', href: '/?activity=act-tilt-maze' },
+  'act-thumb-draw':          { icon: '👍', joke: 'One thumb. Zero excuses. Maximum art.', cta: 'Play One-Thumb Drawing', href: '/?activity=act-thumb-draw' },
+  'act-swipe-reaction':      { icon: '👈👉', joke: '15 rounds. Your reaction time is about to get humbled.', cta: 'Play Swipe Reaction Game', href: '/?activity=act-swipe-reaction' },
 }
 
 export default function Page() {
@@ -288,7 +298,7 @@ export default function Page() {
         id="seo-browse-all"
       >
         <h2 className="text-xl font-black uppercase tracking-tight text-black bg-black text-white px-6 py-4 border-4 border-black">
-          🗂️ Browse All 38 Activities — Fun Things To Do When Bored
+          🗂️ Browse All 43 Activities — Fun Things To Do When Bored
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border-x-4 border-b-4 border-black bg-[#F4F4F1]">
           {activities.map((activity) => {
@@ -336,7 +346,7 @@ export default function Page() {
           })}
         </div>
         <p className="text-center text-[11px] font-bold text-black/50 uppercase tracking-widest py-4 border-x-4 border-b-4 border-black bg-[#F4F4F1]">
-          38 hand-picked activities • no install • no account • 100% free
+          43 hand-picked activities • no install • no account • 100% free
         </p>
       </section>
 
@@ -481,7 +491,7 @@ export default function Page() {
 
       {/* Footer */}
       <footer className="mt-16 border-t-4 border-black bg-[#00FF00] py-6 px-8 flex flex-col sm:flex-row justify-between items-center text-black text-xs font-black uppercase gap-4">
-        <span>Bored Master — 38 activities, no install, no account, 100% free.</span>
+        <span>Bored Master — 43 activities, no install, no account, 100% free.</span>
         <p className="font-mono font-bold tracking-tight text-center">© 2026 Bored Master Inc. • Free your mind from boredom.</p>
       </footer>
     </>
