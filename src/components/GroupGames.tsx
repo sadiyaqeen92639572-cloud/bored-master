@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react';
 import { HelpCircle, Sparkles, RefreshCw, AlertCircle, PartyPopper } from 'lucide-react';
 

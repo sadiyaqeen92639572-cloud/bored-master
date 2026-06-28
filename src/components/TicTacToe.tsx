@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react';
 import { RefreshCw, Play, Trophy, User } from 'lucide-react';
 

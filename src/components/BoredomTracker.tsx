@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react';
 import { Timer, Award, CheckCircle, Zap, ShieldCheck, Flame } from 'lucide-react';
 import { Badge, UserStats } from '../types';

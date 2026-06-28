@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react';
 import { Volume2, VolumeX, RotateCcw, Award } from 'lucide-react';
 

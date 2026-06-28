@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import { Award, RefreshCw, Sparkles, Play, ShieldAlert, Volume2, VolumeX } from 'lucide-react';
 import { getStoredUsername, saveUsername, saveGameRecord } from '../utils/db';

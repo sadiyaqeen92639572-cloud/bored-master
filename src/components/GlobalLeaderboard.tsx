@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react';
 import { Trophy, RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { GameRecord } from '../types';

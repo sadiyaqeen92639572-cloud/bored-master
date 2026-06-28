@@ -14,6 +14,7 @@ export function generateDefaultUsername(): string {
 
 // Retrieves stored username or sets/returns a default one
 export function getStoredUsername(): string {
+  if (typeof window === 'undefined') return generateDefaultUsername();
   let name = localStorage.getItem(USERNAME_KEY);
   if (!name) {
     name = generateDefaultUsername();
@@ -24,6 +25,7 @@ export function getStoredUsername(): string {
 
 // Save custom username
 export function saveUsername(name: string): void {
+  if (typeof window === 'undefined') return;
   if (name.trim()) {
     localStorage.setItem(USERNAME_KEY, name.trim());
   }
@@ -59,6 +61,7 @@ const SEED_RECORDS: GameRecord[] = [
 
 // Gets all game records from localStorage, merging with seed data if none exist
 export function getGameRecords(): GameRecord[] {
+  if (typeof window === 'undefined') return SEED_RECORDS;
   const raw = localStorage.getItem(RECORDS_KEY);
   if (!raw) {
     localStorage.setItem(RECORDS_KEY, JSON.stringify(SEED_RECORDS));

@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect, useRef } from 'react';
 import { Shield, FileSpreadsheet, Code2, AlertTriangle, X } from 'lucide-react';
 

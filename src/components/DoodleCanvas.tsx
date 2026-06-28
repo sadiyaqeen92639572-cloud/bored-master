@@ -1,3 +1,4 @@
+'use client'
 import React, { useRef, useState, useEffect } from 'react';
 import { Palette, Trash2, ShieldAlert, Download, Undo } from 'lucide-react';
 

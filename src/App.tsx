@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect, useMemo } from 'react';
 import { Sparkles, Heart, Trophy, RefreshCw, Terminal, Search, Info, HelpCircle, AlertCircle, Share2, Compass, Zap, HelpCircle as HelpIcon, Smile, Award, Shield } from 'lucide-react';
 import { activities, contextLabels, durationLabels, moodLabels } from './data/activities';

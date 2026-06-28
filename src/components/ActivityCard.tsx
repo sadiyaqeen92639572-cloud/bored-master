@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react';
 import { Star, Share2, ArrowRight, CheckCircle2, ChevronRight, Laptop, Sparkles, BookOpen } from 'lucide-react';
 import { Activity } from '../types';
