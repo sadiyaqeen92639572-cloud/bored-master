@@ -3,15 +3,20 @@ import { activities, moodLabels } from '../src/data/activities'
 import App from '../src/App'
 
 // ─── JSON-LD Schema ───────────────────────────────────────────────────────────
+const SITE_URL = 'https://boredmaster.com'
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
+    // ── WebSite ──────────────────────────────────────────────────────────────
     {
       '@type': 'WebSite',
       name: 'Bored Master',
-      url: 'https://bored-master.pages.dev',
+      url: SITE_URL,
       description: 'Instant anti-boredom ideas for any situation.',
     },
+
+    // ── FAQPage ──────────────────────────────────────────────────────────────
     {
       '@type': 'FAQPage',
       mainEntity: [
@@ -23,6 +28,196 @@ const jsonLd = {
         { '@type': 'Question', name: 'What to do when bored at night?', acceptedAnswer: { '@type': 'Answer', text: 'Try the 3D Binaural Sound Bath, watch Stars and Satellites, do Shadow Puppets Theater, or play the Scale of the Universe explorer.' } },
         { '@type': 'Question', name: 'What to do when bored on computer?', acceptedAnswer: { '@type': 'Answer', text: 'Play Quick Draw vs Google AI, fly over Global Live Radios, explore the Scale of the Universe, or lose hours in the Retro Physics Sandbox.' } },
         { '@type': 'Question', name: 'What to do when bored with friends?', acceptedAnswer: { '@type': 'Answer', text: 'Play Wink Assassin / Mafia, do Boredom Truth or Dare, try Voice Telepathy Mind-Match, or write an Exquisite Corpse story together.' } },
+      ],
+    },
+
+    // ── ItemList — all 38 activities (Google carousel potential) ─────────────
+    {
+      '@type': 'ItemList',
+      name: '38 Fun Things To Do When Bored',
+      description: 'Hand-picked anti-boredom activities and free browser games. No install, no account.',
+      numberOfItems: 38,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1,  name: 'Connect 4 Strategy vs AI',           url: `${SITE_URL}/?activity=act-connect4` },
+        { '@type': 'ListItem', position: 2,  name: 'Satisfying Ice Cream Licking ASMR',  url: `${SITE_URL}/?activity=act-icecream` },
+        { '@type': 'ListItem', position: 3,  name: 'Rainbow Soap Carver & Shaver',        url: `${SITE_URL}/?activity=act-soap-carver` },
+        { '@type': 'ListItem', position: 4,  name: 'Relaxing Lawn Mower Simulator',       url: `${SITE_URL}/?activity=act-grass-cutter` },
+        { '@type': 'ListItem', position: 5,  name: '"Looks Busy" Mode – Fake Spreadsheet', url: `${SITE_URL}/?activity=act-stealth-work` },
+        { '@type': 'ListItem', position: 6,  name: 'Stealthy Doodle Board',               url: `${SITE_URL}/?activity=act-doodle-creative` },
+        { '@type': 'ListItem', position: 7,  name: 'Satisfying Bubble Popper',            url: `${SITE_URL}/?activity=act-bubble-pop` },
+        { '@type': 'ListItem', position: 8,  name: 'Boredom Truth or Dare',               url: `${SITE_URL}/?activity=act-truth-dare` },
+        { '@type': 'ListItem', position: 9,  name: 'Silent Tic-Tac-Toe vs AI',            url: `${SITE_URL}/?activity=act-tictactoe-ai` },
+        { '@type': 'ListItem', position: 10, name: 'The Alphabet Mental Challenge',        url: `${SITE_URL}/?activity=act-class-alphabet` },
+        { '@type': 'ListItem', position: 11, name: '3-Panel Pencil Comic Strip',           url: `${SITE_URL}/?activity=act-class-doodle-story` },
+        { '@type': 'ListItem', position: 12, name: 'Finger Gym (Finger Tutting)',          url: `${SITE_URL}/?activity=act-class-finger-gym` },
+        { '@type': 'ListItem', position: 13, name: 'Master the Thumb Around Pen Spin',     url: `${SITE_URL}/?activity=act-class-pen-spinning` },
+        { '@type': 'ListItem', position: 14, name: 'The Wikipedia Rabbithole Game',        url: 'https://en.wikipedia.org/wiki/Special:Random' },
+        { '@type': 'ListItem', position: 15, name: 'Virtual Tour of a Quirky Museum',      url: 'https://artsandculture.google.com/' },
+        { '@type': 'ListItem', position: 16, name: 'The Supreme Origami Challenge',        url: `${SITE_URL}/?activity=act-home-origami` },
+        { '@type': 'ListItem', position: 17, name: '5-Item Speed Declutter',               url: `${SITE_URL}/?activity=act-home-declutter` },
+        { '@type': 'ListItem', position: 18, name: 'Undetectable Desk Yoga',               url: `${SITE_URL}/?activity=act-work-desk-stretch` },
+        { '@type': 'ListItem', position: 19, name: 'The Great Inbox Unsubscribe',          url: `${SITE_URL}/?activity=act-work-email-cleanup` },
+        { '@type': 'ListItem', position: 20, name: 'Ultra Fast Typing Training',           url: 'https://play.typeracer.com/' },
+        { '@type': 'ListItem', position: 21, name: 'Voice Telepathy Mind-Match',           url: `${SITE_URL}/?activity=act-friends-telepathy` },
+        { '@type': 'ListItem', position: 22, name: 'The Exquisite Corpse Story',           url: `${SITE_URL}/?activity=act-friends-story` },
+        { '@type': 'ListItem', position: 23, name: 'Wink Assassin / Mafia Game',           url: `${SITE_URL}/?activity=act-friends-wink-assassin` },
+        { '@type': 'ListItem', position: 24, name: 'Stars and Satellites Watching',        url: `${SITE_URL}/?activity=act-night-sky` },
+        { '@type': 'ListItem', position: 25, name: 'Retro Shadow Puppets Theater',         url: `${SITE_URL}/?activity=act-night-shadow-puppets` },
+        { '@type': 'ListItem', position: 26, name: '3D Binaural Sound Bath',               url: 'https://mynoise.net/' },
+        { '@type': 'ListItem', position: 27, name: 'Challenge Google Quick Draw AI',       url: 'https://quickdraw.withgoogle.com/' },
+        { '@type': 'ListItem', position: 28, name: 'Fly Over Global Live Radios',          url: 'https://radio.garden/' },
+        { '@type': 'ListItem', position: 29, name: 'Zoom Through the Scale of the Universe', url: 'https://htwins.net/scale2/' },
+        { '@type': 'ListItem', position: 30, name: 'Retro Physics Sandbox – Sandspiel',    url: 'https://sandspiel.club/' },
+        { '@type': 'ListItem', position: 31, name: 'Random Nail Art Combo Generator',      url: `${SITE_URL}/?activity=act-girls-nail-art` },
+        { '@type': 'ListItem', position: 32, name: '5-Min Digital Vision Board',           url: `${SITE_URL}/?activity=act-girls-vision-board` },
+        { '@type': 'ListItem', position: 33, name: 'Bullet Journal Speed Layout',          url: `${SITE_URL}/?activity=act-girls-journal` },
+        { '@type': 'ListItem', position: 34, name: 'GRWM Routine Randomizer',              url: `${SITE_URL}/?activity=act-girls-grwm` },
+        { '@type': 'ListItem', position: 35, name: 'Letter to Future Me in 1 Year',        url: 'https://www.futureme.org/' },
+        { '@type': 'ListItem', position: 36, name: 'Unhinged Personality Quiz Marathon',   url: 'https://uquiz.com/' },
+        { '@type': 'ListItem', position: 37, name: 'Mood Playlist in 10 Minutes',          url: `${SITE_URL}/?activity=act-girls-playlist` },
+        { '@type': 'ListItem', position: 38, name: 'Hand Lettering in 10 Minutes',         url: `${SITE_URL}/?activity=act-girls-handlettering` },
+      ],
+    },
+
+    // ── SoftwareApplication — interactive browser games ───────────────────────
+    {
+      '@type': 'SoftwareApplication', name: 'Connect 4 Strategy vs AI', applicationCategory: 'GameApplication',
+      operatingSystem: 'Web Browser', url: `${SITE_URL}/?activity=act-connect4`,
+      description: 'Free online Connect 4 game against an AI opponent. Place pieces freely on the grid. No download required.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'SoftwareApplication', name: 'Satisfying Ice Cream Licking ASMR', applicationCategory: 'GameApplication',
+      operatingSystem: 'Web Browser', url: `${SITE_URL}/?activity=act-icecream`,
+      description: 'Interactive ASMR ice cream licking game. Lick scoops before they melt — free, no install needed.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'SoftwareApplication', name: 'Rainbow Soap Carver ASMR', applicationCategory: 'GameApplication',
+      operatingSystem: 'Web Browser', url: `${SITE_URL}/?activity=act-soap-carver`,
+      description: 'Virtual soap carving and shaving simulator. Satisfying ASMR game — free browser game, no download.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'SoftwareApplication', name: 'Relaxing Lawn Mower Simulator', applicationCategory: 'GameApplication',
+      operatingSystem: 'Web Browser', url: `${SITE_URL}/?activity=act-grass-cutter`,
+      description: 'Mow a virtual lawn in a satisfying browser game. Free, no install, no ads.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'SoftwareApplication', name: 'Satisfying Bubble Popper', applicationCategory: 'GameApplication',
+      operatingSystem: 'Web Browser', url: `${SITE_URL}/?activity=act-bubble-pop`,
+      description: 'Pop satisfying bubbles in this free browser game. Infinite bubble wrap — no install needed.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'SoftwareApplication', name: 'Silent Tic-Tac-Toe vs AI', applicationCategory: 'GameApplication',
+      operatingSystem: 'Web Browser', url: `${SITE_URL}/?activity=act-tictactoe-ai`,
+      description: 'Play Tic-Tac-Toe against an AI opponent in your browser. Silent, free, no download.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'SoftwareApplication', name: 'Boredom Truth or Dare', applicationCategory: 'GameApplication',
+      operatingSystem: 'Web Browser', url: `${SITE_URL}/?activity=act-truth-dare`,
+      description: 'Free Truth or Dare generator for groups. Random dares and questions — browser-based, no install.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'SoftwareApplication', name: 'Stealthy Doodle Board', applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Web Browser', url: `${SITE_URL}/?activity=act-doodle-creative`,
+      description: 'Discreet browser doodle board that looks like work. Draw without anyone noticing — free, no install.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+
+    // ── HowTo — step-by-step offline activities ───────────────────────────────
+    {
+      '@type': 'HowTo', name: 'How to Do Finger Gym (Finger Tutting)',
+      description: 'Learn fluid geometric finger movements to improve manual dexterity. Silent, can be done anywhere.',
+      totalTime: 'PT5M',
+      step: [
+        { '@type': 'HowToStep', text: 'Press your palms together, then fold every other finger alternately.' },
+        { '@type': 'HowToStep', text: 'Try to create perfect right angles by rolling your knuckles.' },
+        { '@type': 'HowToStep', text: 'Mentally orchestrate simple routines to practice.' },
+      ],
+    },
+    {
+      '@type': 'HowTo', name: 'How to Do the Thumb Around Pen Spin',
+      description: 'Learn to spin a pen around your thumb — the classic trick of pen spinning, perfect for class or lectures.',
+      totalTime: 'PT15M',
+      supply: [{ '@type': 'HowToSupply', name: 'Balanced ballpoint pen' }],
+      step: [
+        { '@type': 'HowToStep', text: 'Get a balanced pen (a classic long ballpoint pen is perfect).' },
+        { '@type': 'HowToStep', text: 'Position it between your middle finger, index finger, and thumb.' },
+        { '@type': 'HowToStep', text: 'Give a gentle push with your middle finger to pivot the pen around your thumb.' },
+        { '@type': 'HowToStep', text: 'Catch it with your index finger. Be careful not to drop it loudly on the floor!' },
+      ],
+    },
+    {
+      '@type': 'HowTo', name: 'How to Fold an Origami Crane',
+      description: 'Fold a classic Japanese paper crane from a single square sheet of paper. No scissors needed.',
+      totalTime: 'PT15M',
+      supply: [{ '@type': 'HowToSupply', name: 'Square sheet of paper' }],
+      step: [
+        { '@type': 'HowToStep', text: 'Take a standard piece of paper and cut or fold it into a perfect square.' },
+        { '@type': 'HowToStep', text: 'Apply basic origami folds: diagonals, then center lines.' },
+        { '@type': 'HowToStep', text: 'Follow a paper crane or butterfly fold sequence.' },
+        { '@type': 'HowToStep', text: 'Decorate the finished model with pens or markers.' },
+      ],
+    },
+    {
+      '@type': 'HowTo', name: 'How to Do a 5-Item Speed Declutter',
+      description: 'Find and remove exactly 5 unnecessary items from your space in under 5 minutes. Perfect productivity kickstart.',
+      totalTime: 'PT5M',
+      step: [
+        { '@type': 'HowToStep', text: 'Set a timer for 3 minutes.' },
+        { '@type': 'HowToStep', text: 'Scan the room for visual clutter.' },
+        { '@type': 'HowToStep', text: 'Pick 5 items: old papers, wrappers, dried-up pens, dirty laundry.' },
+        { '@type': 'HowToStep', text: 'Discard or return each item to its proper spot.' },
+      ],
+    },
+    {
+      '@type': 'HowTo', name: 'How to Do Undetectable Desk Yoga',
+      description: 'Discreet micro-stretches you can do at your desk chair to release tension without anyone noticing.',
+      totalTime: 'PT5M',
+      step: [
+        { '@type': 'HowToStep', text: 'Sit up straight, drop your shoulders, and make gentle, slow circles with your neck.' },
+        { '@type': 'HowToStep', text: 'Push your palms toward the ceiling to stretch your spine.' },
+        { '@type': 'HowToStep', text: 'Gently roll your ankles and brace your core for 15 seconds.' },
+      ],
+    },
+    {
+      '@type': 'HowTo', name: 'How to Play the Exquisite Corpse Story Game',
+      description: 'Create a hilarious collaborative story where each player writes one sentence, folds the paper, and passes it on.',
+      totalTime: 'PT15M',
+      supply: [{ '@type': 'HowToSupply', name: 'Sheet of paper and a pen' }],
+      step: [
+        { '@type': 'HowToStep', text: 'The first player writes a sentence (Subject + Verb + Object) at the top of the paper.' },
+        { '@type': 'HowToStep', text: 'Fold the paper so only the very end of the sentence is visible.' },
+        { '@type': 'HowToStep', text: 'The next player continues the story from that clue and folds it again.' },
+        { '@type': 'HowToStep', text: 'At the end, unfold the paper and read the absurd masterpiece out loud!' },
+      ],
+    },
+    {
+      '@type': 'HowTo', name: 'How to Play Wink Assassin (Mafia Game)',
+      description: 'A party game of psychology and secrets. A secret assassin eliminates players by winking, while a detective tries to unmask them.',
+      totalTime: 'PT15M',
+      step: [
+        { '@type': 'HowToStep', text: 'Draw roles in secret (one assassin, one detective, and citizens).' },
+        { '@type': 'HowToStep', text: 'All players make eye contact and chat normally.' },
+        { '@type': 'HowToStep', text: 'The assassin discreetly winks at a citizen to eliminate them — the victim waits 5 seconds then declares they are dead.' },
+        { '@type': 'HowToStep', text: 'The detective must observe the group and accuse the suspect before everyone is eliminated.' },
+      ],
+    },
+    {
+      '@type': 'HowTo', name: 'How to Do Retro Shadow Puppets Theater',
+      description: 'Use a phone flashlight to project funny animal silhouettes on your bedroom wall. A calming and creative night activity.',
+      totalTime: 'PT5M',
+      supply: [{ '@type': 'HowToSupply', name: 'Phone with flashlight' }],
+      step: [
+        { '@type': 'HowToStep', text: 'Prop up your phone so the flashlight shines onto a plain wall.' },
+        { '@type': 'HowToStep', text: 'Position your hands between the light source and the wall.' },
+        { '@type': 'HowToStep', text: 'Shape your fingers into animal silhouettes (dog, bird, rabbit) and project them.' },
+        { '@type': 'HowToStep', text: 'Create a short story or dialogue between the shadow puppets.' },
       ],
     },
   ],
@@ -181,6 +376,99 @@ export default function Page() {
               { q: 'What can a girl do when bored at home alone?', a: <>Great solo activities for girls at home: generate a <a href="/?activity=act-girls-nail-art" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">random nail art combo</a>, start a <a href="/?activity=act-girls-journal" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">bullet journal</a>, build a <a href="/?activity=act-girls-vision-board" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">digital vision board</a>, take a <a href="https://uquiz.com/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">personality quiz marathon</a>, or write a <a href="https://www.futureme.org/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">letter to your future self</a>. On screen: try our <a href="/?activity=act-icecream" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">ASMR Ice Cream game</a>, the <a href="/?activity=act-doodle-creative" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Doodle Board</a>, or build a <a href="/?activity=act-girls-playlist" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">mood playlist</a>.</> },
               { q: 'What to do when your bored for girls at night?', a: <>Night boredom hits different. Best ideas for girls at night: dim your screen and play the <a href="https://mynoise.net/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">3D Binaural Sound Bath</a>, do a <a href="/?activity=act-girls-grwm" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">GRWM aesthetic randomizer</a>, write in your <a href="/?activity=act-girls-journal" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">bullet journal</a>, or take 3 <a href="https://uquiz.com/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">personality quizzes</a> back-to-back. Can&apos;t sleep: <a href="/?activity=act-bubble-pop" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Bubble Popper</a> and <a href="https://htwins.net/scale2/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Scale of the Universe</a> are perfect 3AM activities.</> },
               { q: 'What to do when bored for teenage girls?', a: <>Teenage girl boredom cures: start a <a href="/?activity=act-girls-vision-board" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">digital vision board</a> for your goals, practice <a href="/?activity=act-girls-handlettering" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">hand lettering</a> (impressive, 10 min), challenge a friend to <a href="/?activity=act-friends-telepathy" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Telepathy Mind-Match</a> or <a href="/?activity=act-truth-dare" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Truth or Dare</a>, build a <a href="/?activity=act-girls-playlist" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">breakup/hype-up playlist</a>, or write yourself a <a href="https://www.futureme.org/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">letter to open in one year</a>. Also: <a href="/?activity=act-connect4" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Connect 4 vs AI</a> is secretly addictive.</> },
+            ] as { q: string; a: React.ReactNode }[]).map(({ q, a }) => (
+              <details key={q} className="bg-[#F4F4F1] border-2 border-black p-4">
+                <summary className="font-black uppercase text-xs cursor-pointer select-none">{q}</summary>
+                <p className="mt-3 text-xs leading-relaxed font-medium text-black/80">{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Phone Boredom Guide Section */}
+      <section className="mt-10 max-w-6xl mx-auto px-4 bg-white border-4 border-black p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-black mb-6 pb-4 border-b-4 border-black">
+          What to Do When Bored on Phone
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs text-black/85">
+          {([
+            {
+              emoji: '🎮',
+              title: 'Quick Phone Games When Bored',
+              body: (<>No downloads needed. Pop infinite bubbles in <a href="/?activity=act-bubble-pop" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Bubble Popper</a>, challenge the AI at <a href="/?activity=act-connect4" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Connect 4</a> or <a href="/?activity=act-tictactoe-ai" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Tic-Tac-Toe</a>, or lick a melting <a href="/?activity=act-icecream" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Ice Cream ASMR</a> before it drips. All tap-friendly, all free.</>),
+            },
+            {
+              emoji: '😌',
+              title: 'Relaxing Phone Activities When Bored',
+              body: (<>Need to decompress? Carve a <a href="/?activity=act-soap-carver" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">neon ASMR soap bar</a>, mow a satisfying <a href="/?activity=act-grass-cutter" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">pixel lawn</a> in perfect rows, or pop <a href="/?activity=act-bubble-pop" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">infinite bubble wrap</a> mindlessly. Scientifically proven to remove overthinking (by us, just now).</>),
+            },
+            {
+              emoji: '🤫',
+              title: 'Quiet Phone Activities (No Sound)',
+              body: (<>Silent mode only: <a href="/?activity=act-bubble-pop" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Bubble Popper</a> for instant calm, <a href="/?activity=act-class-finger-gym" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Finger Gym</a> dexterity challenge, <a href="/?activity=act-doodle-creative" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Stealthy Doodle Board</a> for silent creative release. Zero sound, maximum focus absorption.</>),
+            },
+            {
+              emoji: '🏆',
+              title: 'Phone Games to Play Alone When Bored',
+              body: (<>Solo phone sessions: beat your <a href="/?activity=act-bubble-pop" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">bubble pop high score</a>, try to win at <a href="/?activity=act-connect4" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Connect 4 vs AI (Hard mode)</a>, survive a <a href="/?activity=act-icecream" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">full ice cream lick</a> without dropping it, or race on <a href="https://play.typeracer.com/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">TypeRacer</a> to smash WPM records.</>),
+            },
+            {
+              emoji: '👯',
+              title: 'Phone Activities with Friends When Bored',
+              body: (<>Multiplayer boredom fix: play <a href="/?activity=act-friends-wink-assassin" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Wink Assassin</a> on one screen, send each other <a href="/?activity=act-friends-story" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Collaborative Story</a> prompts via text, or run a <a href="/?activity=act-truth-dare" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Truth or Dare</a> session over voice call. <a href="/?activity=act-friends-telepathy" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Telepathy Mind-Match</a> works great over FaceTime too.</>),
+            },
+            {
+              emoji: '🌙',
+              title: 'What to Do on Your Phone at Night',
+              body: (<>3AM phone doom-scroll antidote: dim brightness and explore <a href="https://htwins.net/scale2/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Scale of the Universe</a>, mow a <a href="/?activity=act-grass-cutter" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">relaxing pixel lawn</a>, try <a href="/?activity=act-night-shadow-puppets" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Shadow Puppets Theater</a> with your flashlight, or play <a href="https://mynoise.net/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Binaural Soundscapes</a> to actually fall asleep.</>),
+            },
+            {
+              emoji: '⚡',
+              title: '5-Minute Phone Activities When Bored',
+              body: (<>Short attention span approved: try <a href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Google Quick Draw AI</a> (20-second sketches), do one round of <a href="/?activity=act-tictactoe-ai" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Tic-Tac-Toe</a>, carve one <a href="/?activity=act-soap-carver" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">soap bar</a>, or pop bubbles for exactly 60 seconds in <a href="/?activity=act-bubble-pop" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Bubble Popper</a>.</>),
+            },
+            {
+              emoji: '🎨',
+              title: 'Creative Things to Do on Phone When Bored',
+              body: (<>Unleash phone creativity: draw anything on the <a href="/?activity=act-doodle-creative" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Doodle Board</a>, write a <a href="/?activity=act-friends-story" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">random story prompt</a>, generate a <a href="/?activity=act-girls-nail-art" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">random nail art combo</a>, or start a digital <a href="/?activity=act-girls-vision-board" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">vision board</a> for something you actually want to accomplish.</>),
+            },
+            {
+              emoji: '😂',
+              title: 'Funny Things to Do on Phone When Bored',
+              body: (<>Boredom + humor = cured: activate <a href="/?activity=act-stealth-work" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">&ldquo;Looks Busy&rdquo; Mode</a> (fake spreadsheet that fools everyone), play <a href="/?activity=act-truth-dare" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Truth or Dare</a> with your most chaotic contact, write yourself a <a href="https://www.futureme.org/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">letter to open in 5 years</a> and make it embarrassing on purpose.</>),
+            },
+          ] as { emoji: string; title: string; body: React.ReactNode }[]).map(({ emoji, title, body }) => (
+            <div key={title} className="bg-[#E9E9E9] p-5 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <h3 className="font-black text-sm uppercase tracking-tight mb-2 flex items-center gap-1.5 border-b border-black/20 pb-1.5">
+                <span>{emoji}</span> {title}
+              </h3>
+              <p className="leading-relaxed font-medium">{body}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Phone FAQ */}
+        <div className="mt-8 pt-6 border-t-4 border-black">
+          <h3 className="font-black text-sm uppercase tracking-tight text-black mb-4">📱 FAQ — What to Do When Bored on Phone</h3>
+          <div className="space-y-3">
+            {([
+              {
+                q: 'What can I do on my phone when I\'m bored?',
+                a: (<>Best no-download phone activities: pop <a href="/?activity=act-bubble-pop" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">infinite bubble wrap</a>, carve a <a href="/?activity=act-soap-carver" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">neon ASMR soap</a>, beat the <a href="/?activity=act-connect4" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Connect 4 AI</a>, lick a <a href="/?activity=act-icecream" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">melting ice cream</a>, or play <a href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Google Quick Draw</a>. All free, all instant, no account required.</>),
+              },
+              {
+                q: 'What games can I play on my phone when bored alone?',
+                a: (<>Top solo phone games when bored: <a href="/?activity=act-connect4" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Connect 4 vs AI</a> (3 difficulty levels), <a href="/?activity=act-tictactoe-ai" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Tic-Tac-Toe vs AI</a>, <a href="/?activity=act-bubble-pop" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Bubble Popper</a> (beat your own score), <a href="/?activity=act-icecream" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Ice Cream ASMR</a>, and <a href="/?activity=act-grass-cutter" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Lawn Mower Simulator</a>. No login, no install, instant tap-to-play.</>),
+              },
+              {
+                q: 'What to do when bored on phone at night?',
+                a: (<>Low-stimulation night phone activities: mow a <a href="/?activity=act-grass-cutter" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">relaxing pixel lawn</a> (no sound needed), explore <a href="https://htwins.net/scale2/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Scale of the Universe</a>, try <a href="https://mynoise.net/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">MyNoise sound baths</a> to wind down, or write a <a href="https://www.futureme.org/" target="_blank" rel="noopener noreferrer" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">letter to future you</a>. Avoid anything with leaderboards — they spike adrenaline.</>),
+              },
+              {
+                q: 'What are fun things to do on your phone when bored with friends?',
+                a: (<>Phone fun with friends: share one screen for <a href="/?activity=act-friends-wink-assassin" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Wink Assassin</a>, run a <a href="/?activity=act-truth-dare" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Truth or Dare</a> generator, play <a href="/?activity=act-friends-telepathy" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Telepathy Mind-Match</a> over FaceTime, or write an <a href="/?activity=act-friends-story" className="font-black text-[#1D4ED8] underline decoration-2 hover:bg-[#00FF00] hover:text-black px-0.5 transition-colors">Exquisite Corpse story</a> by texting one sentence each. Zero setup, immediate chaos.</>),
+              },
             ] as { q: string; a: React.ReactNode }[]).map(({ q, a }) => (
               <details key={q} className="bg-[#F4F4F1] border-2 border-black p-4">
                 <summary className="font-black uppercase text-xs cursor-pointer select-none">{q}</summary>
