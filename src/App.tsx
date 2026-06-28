@@ -52,6 +52,9 @@ export default function App() {
   // Tab control
   const [activeTab, setActiveTab] = useState<'hub' | 'favorites' | 'stats'>('hub');
 
+  // Browse all activities toggle (content stays in DOM for SEO)
+  const [showAllActivities, setShowAllActivities] = useState(false);
+
   // User Stats state
   const [userStats, setUserStats] = useState<UserStats>(() => {
     const defaultStats: UserStats = {
@@ -775,6 +778,112 @@ export default function App() {
         )}
 
       </main>
+
+      {/* ═══════════════════════════════════════════════════════
+          BROWSE ALL ACTIVITIES — always in DOM for Google SEO
+          CSS max-h-0 collapse: content indexed, visually hidden
+          ═══════════════════════════════════════════════════════ */}
+      <section className="mt-10 max-w-6xl mx-auto px-4" aria-label="Browse all anti-boredom activities">
+        {/* Toggle button */}
+        <button
+          onClick={() => setShowAllActivities(v => !v)}
+          className="w-full flex items-center justify-between gap-4 bg-black text-white border-4 border-black px-6 py-4 font-black uppercase tracking-tight text-sm hover:bg-[#00FF00] hover:text-black transition-all shadow-[6px_6px_0px_0px_rgba(0,255,0,0.4)] cursor-pointer group"
+          aria-expanded={showAllActivities}
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🗂️</span>
+            <div className="text-left">
+              <div className="text-base font-black">Browse All 30 Activities</div>
+              <div className="text-[11px] font-bold opacity-70 group-hover:opacity-100 normal-case tracking-normal">
+                Fun things to do when bored — click any card to launch instantly
+              </div>
+            </div>
+          </div>
+          <span className="text-2xl transition-transform duration-300" style={{ transform: showAllActivities ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+        </button>
+
+        {/* Grid — always rendered, CSS-only collapse so Google indexes all 30 */}
+        <div
+          className="overflow-hidden transition-all duration-500 border-x-4 border-b-4 border-black bg-[#F4F4F1]"
+          style={{ maxHeight: showAllActivities ? '9999px' : '0px' }}
+          aria-hidden={!showAllActivities}
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0">
+            {[
+              { id: 'act-connect4',           icon: '🤖', joke: 'Beat the robot. If you lose, it doesn\'t count.' },
+              { id: 'act-icecream',           icon: '🍦', joke: 'Lick pixels. Zero calories. Infinite satisfaction.' },
+              { id: 'act-soap-carver',        icon: '🧼', joke: 'Adult stress toy. Do not judge.' },
+              { id: 'act-grass-cutter',       icon: '🌿', joke: 'The grass is always greener on your screen.' },
+              { id: 'act-stealth-work',       icon: '🕵️', joke: 'The fake spreadsheet that saved careers.' },
+              { id: 'act-doodle-creative',    icon: '🎨', joke: 'Picasso also started in class. Probably.' },
+              { id: 'act-bubble-pop',         icon: '🫧', joke: 'Therapy. Free. No appointment needed.' },
+              { id: 'act-truth-dare',         icon: '🔥', joke: 'Warning: friendships may not survive.' },
+              { id: 'act-tictactoe-ai',       icon: '❌', joke: 'The AI is unbeatable. Or is it?' },
+              { id: 'act-class-alphabet',     icon: '🔤', joke: 'A, B, C... actually harder than it sounds.' },
+              { id: 'act-class-doodle-story', icon: '📝', joke: 'Shakespeare started somewhere. Probably a napkin.' },
+              { id: 'act-class-finger-gym',   icon: '🖐️', joke: 'Become a hand wizard. Completely free skill.' },
+              { id: 'act-class-pen-spinning', icon: '🖊️', joke: 'One trick away from becoming a classroom legend.' },
+              { id: 'act-home-wikipedia',     icon: '🌐', joke: 'Warning: you WILL learn extremely weird facts.' },
+              { id: 'act-home-museum',        icon: '🏛️', joke: 'Free museum. No gift shop guilt.' },
+              { id: 'act-home-origami',       icon: '📐', joke: 'Instructions included. You\'ll still mess up fold 3.' },
+              { id: 'act-home-declutter',     icon: '🧹', joke: 'Marie Kondo speedrun. 5 items. Go.' },
+              { id: 'act-work-desk-stretch',  icon: '🧘', joke: 'Your coworkers have absolutely no idea.' },
+              { id: 'act-work-email-cleanup', icon: '📥', joke: 'Digital cleanse. Extremely satisfying.' },
+              { id: 'act-work-type-racer',    icon: '⌨️', joke: 'Type faster than your own thoughts.' },
+              { id: 'act-friends-telepathy',  icon: '🧠', joke: 'Are you psychic? Spoiler: maybe.' },
+              { id: 'act-friends-story',      icon: '✍️', joke: 'Collaborative chaos. Guaranteed hilarious results.' },
+              { id: 'act-friends-wink-assassin', icon: '👁️', joke: 'Trust no one. Especially Carl.' },
+              { id: 'act-night-sky',          icon: '🌌', joke: 'The sky is free. Just lie down and look up.' },
+              { id: 'act-night-shadow-puppets', icon: '🐕', joke: 'Hollywood budget: $0. Entertainment value: priceless.' },
+              { id: 'act-night-ambient-sound', icon: '🎧', joke: 'Your ears are about to go on a full vacation.' },
+              { id: 'act-comp-quick-draw',    icon: '🤖', joke: 'Teach a robot to recognize your terrible art.' },
+              { id: 'act-comp-radio-garden',  icon: '📻', joke: 'Morning in Tokyo. Evening in Berlin. Breakfast at your desk.' },
+              { id: 'act-comp-scale-universe', icon: '🔭', joke: 'You are very, very small. Very.' },
+              { id: 'act-comp-sandspiel',     icon: '⏳', joke: 'Satisfying sand physics. For grown adults. No shame.' },
+            ].map(({ id, icon, joke }) => {
+              const activity = activities.find(a => a.id === id);
+              if (!activity) return null;
+              const isSelected = selectedActivity?.id === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => {
+                    setSelectedActivity(activity);
+                    setShowAllActivities(false);
+                    setTimeout(() => document.getElementById('main-activity-view')?.scrollIntoView({ behavior: 'smooth' }), 50);
+                  }}
+                  className={`group text-left p-4 border-r-2 border-b-2 border-black transition-all cursor-pointer ${isSelected ? 'bg-[#00FF00]' : 'bg-white hover:bg-black hover:text-white'}`}
+                  title={activity.title}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl shrink-0 mt-0.5">{icon}</span>
+                    <div className="min-w-0">
+                      <h3 className={`text-[11px] font-black uppercase tracking-tight leading-tight mb-1 ${isSelected ? 'text-black' : 'text-black group-hover:text-[#00FF00]'} transition-colors`}>
+                        {activity.title.replace(/^[\p{Emoji}\s]+/u, '').trim()}
+                      </h3>
+                      <p className={`text-[10px] font-medium leading-relaxed ${isSelected ? 'text-black/70' : 'text-black/50 group-hover:text-white/70'} transition-colors`}>
+                        {joke}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {activity.moods.slice(0, 2).map(m => (
+                          <span key={m} className={`text-[9px] font-black uppercase px-1.5 py-0.5 border border-black ${isSelected ? 'bg-black text-white' : 'bg-[#E9E9E9] text-black group-hover:bg-white/20 group-hover:text-white group-hover:border-white/40'} transition-colors`}>
+                            {moodLabels[m as keyof typeof moodLabels] || m}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <div className="p-4 border-t-2 border-black text-center">
+            <p className="text-[11px] font-bold text-black/50 uppercase tracking-widest">
+              30 hand-picked activities • no install • no account • 100% free
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Anti-Boredom FAQ and SEO Guides Section */}
       <div className="mt-16 bg-white border-4 border-black p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-6xl mx-auto">
