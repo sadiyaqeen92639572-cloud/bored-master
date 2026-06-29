@@ -24,6 +24,10 @@
 
 **[boredmaster.com](https://boredmaster.com/)** — the full activity library with Smart Pick, leaderboards, and browser-playable games.
 
+## Not Sure What to Do Right Now?
+
+If you're bored but don't know which activity fits your current mood and situation, the **[What to Do When Bored — Activity Finder Quiz](https://sadiyaqeen92639572-cloud.github.io/boredom-activity-finder/)** narrows it down in 60 seconds. Answer 4 questions (mood, time available, location, solo or group) and get 3 personalized picks — filtered from the same activity library powering boredmaster.com. Useful when the full 43-activity list feels overwhelming or you just need a fast answer.
+
 ## Stack
 
 - React 19 + Vite + TypeScript + Tailwind CSS
