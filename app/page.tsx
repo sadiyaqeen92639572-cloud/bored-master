@@ -225,6 +225,16 @@ const jsonLd = {
         { '@type': 'HowToStep', text: 'Create a short story or dialogue between the shadow puppets.' },
       ],
     },
+
+    // ── Organization ─────────────────────────────────────────────────────────
+    {
+      '@type': 'Organization',
+      name: 'Bored Master',
+      legalName: 'Gesmine-Invest Limited',
+      url: SITE_URL,
+      identifier: { '@type': 'PropertyValue', propertyID: 'UK Company Number', value: '14120136' },
+      address: { '@type': 'PostalAddress', streetAddress: 'Hardy House, 269 Poynders Gardens', addressLocality: 'London', postalCode: 'SW4 8PQ', addressCountry: 'GB' },
+    },
   ],
 }
 
@@ -490,9 +500,14 @@ export default function Page() {
       </section>
 
       {/* Footer */}
-      <footer className="mt-16 border-t-4 border-black bg-[#00FF00] py-6 px-8 flex flex-col sm:flex-row justify-between items-center text-black text-xs font-black uppercase gap-4">
-        <span>Bored Master — 43 activities, no install, no account, 100% free.</span>
-        <p className="font-mono font-bold tracking-tight text-center">© 2026 Bored Master Inc. • Free your mind from boredom.</p>
+      <footer className="mt-16 border-t-4 border-black bg-[#00FF00] py-6 px-8 flex flex-col items-center text-black text-xs font-black uppercase gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4">
+          <span>Bored Master — 43 activities, no install, no account, 100% free.</span>
+          <p className="font-mono font-bold tracking-tight text-center">© 2026 Bored Master Inc. • Free your mind from boredom.</p>
+        </div>
+        <p className="normal-case font-medium text-[10px] text-black/70 text-center max-w-2xl">
+          Bored Master is part of Gesmine-Invest Limited, registered UK company number 14120136, registered office address at Hardy House, 269 Poynders Gardens, London, London, United Kingdom, SW4 8PQ.
+        </p>
       </footer>
     </>
   )
