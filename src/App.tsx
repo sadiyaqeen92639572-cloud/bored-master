@@ -52,6 +52,15 @@ export default function App() {
       setTimeout(() => {
         document.getElementById('main-activity-view')?.scrollIntoView({ behavior: 'smooth' });
       }, 600);
+      // Share-link deep-link URLs (?activity=) are content-identical to the
+      // homepage — noindex them so they don't compete with "/" in search results.
+      let robotsTag = document.querySelector('meta[name="robots"]');
+      if (!robotsTag) {
+        robotsTag = document.createElement('meta');
+        robotsTag.setAttribute('name', 'robots');
+        document.head.appendChild(robotsTag);
+      }
+      robotsTag.setAttribute('content', 'noindex, follow');
     }
   }, []);
 
