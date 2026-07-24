@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://boredmaster.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://boredmaster.com/games/connect4/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/games/tictactoe/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/games/soap-carver/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/games/lawn-mower/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/games/bubble-pop/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/activities/home/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/activities/school/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/activities/work/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/activities/night/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/activities/friends/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://boredmaster.com/boredom-activity-finder/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+</urlset>
